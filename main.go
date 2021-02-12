@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"github.com/dmitriivoitovich/wallester-test-assignment/config"
+	"github.com/dmitriivoitovich/wallester-test-assignment/dao/db"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"
@@ -23,12 +25,13 @@ const (
 )
 
 func main() {
-	// connect to DB
-	//db.Connect()
-
 	// echo instance
 	e := echo.New()
 	e.HideBanner = true
+
+	// connect to DB
+	dbConf := config.DBConfig()
+	go db.InitConn(dbConf, e.Logger)
 
 	// middlewares
 	e.Use(middleware.Logger())
