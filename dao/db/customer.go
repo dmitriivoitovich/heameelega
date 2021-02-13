@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	GenderMale   = 1
-	GenderFemale = 0
+	GenderMale   = true
+	GenderFemale = false
 )
 
 type Customer struct {

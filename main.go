@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/dmitriivoitovich/wallester-test-assignment/config"
+	"github.com/dmitriivoitovich/wallester-test-assignment/controller"
 	"github.com/dmitriivoitovich/wallester-test-assignment/dao/db"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -29,7 +30,7 @@ func main() {
 	e := echo.New()
 	e.HideBanner = true
 
-	// connect to DB
+	// DB connection
 	dbConf := config.DBConfig()
 	go db.InitConn(dbConf, e.Logger)
 
@@ -37,8 +38,13 @@ func main() {
 	e.Use(middleware.Logger())
 
 	// routes
-	//e.GET("/", controller.ListCustomers)
-	//e.GET("/edit/:id", controller.EditCustomer)
+	//e.GET("/", controller.GetHome)
+	//e.GET("/customers", controller.GetListCustomers)
+	e.GET("/customers/new", controller.GetCreateCustomer)
+	e.POST("/customers/new", controller.PostCreateCustomer)
+	//e.GET("/customers/:id", controller.GetShowCustomer)
+	//e.GET("/customers/:id/edit", controller.GetEditCustomer)
+	//e.POST("/customers/:id/edit", controller.PostEditCustomer)
 
 	// http server instance
 	s := &http.Server{

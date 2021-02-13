@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func CreateCustomer(customer db.Customer) error {
+func CreateCustomer(customer *db.Customer) error {
 	return db.DB.Create(customer).Error
 }
 
