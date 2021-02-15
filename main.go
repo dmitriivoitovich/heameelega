@@ -38,6 +38,7 @@ func main() {
 	e.Use(middleware.Logger())
 
 	// routes
+	e.Static("/public", "public")
 	//e.GET("/", controller.GetHome)
 	//e.GET("/customers", controller.GetListCustomers)
 	e.GET("/customers/new", controller.GetCreateCustomer)
@@ -47,21 +48,9 @@ func main() {
 	//e.POST("/customers/:id/edit", controller.PostEditCustomer)
 
 	// http server instance
-	s := &http.Server{
-		Addr:           ":" + httpPort,
-		ReadTimeout:    httpReadTimeout,
-		WriteTimeout:   httpWriteTimeout,
-		IdleTimeout:    httpIdleTimeout,
-		MaxHeaderBytes: maxHeaderSize,
-	}
+	go startWebServer(e)
 
-	go func() {
-		if err := e.StartServer(s); err != nil {
-			e.Logger.Info("shutting down the server")
-		}
-	}()
-
-	// wait for interrupt signal to gracefully shutdown the server
+	// wait for interrupt signal
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 
@@ -72,5 +61,19 @@ func main() {
 
 	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal(err)
+	}
+}
+
+func startWebServer(e *echo.Echo) {
+	s := &http.Server{
+		Addr:           ":" + httpPort,
+		ReadTimeout:    httpReadTimeout,
+		WriteTimeout:   httpWriteTimeout,
+		IdleTimeout:    httpIdleTimeout,
+		MaxHeaderBytes: maxHeaderSize,
+	}
+
+	if err := e.StartServer(s); err != nil {
+		e.Logger.Info("shutting down the server")
 	}
 }
