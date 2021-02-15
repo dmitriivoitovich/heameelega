@@ -15,7 +15,7 @@ type TmplData struct {
 }
 
 var createCustomerTmpl = template.Must(
-	template.New("create.gohtml").Funcs(funcMap).ParseFiles("public/create.gohtml"),
+	template.New("create.gohtml").Funcs(funcMap).ParseFiles("templates/create.gohtml"),
 )
 
 var funcMap = template.FuncMap{
@@ -54,9 +54,11 @@ func PostCreateCustomer(c echo.Context) error {
 
 			return createCustomerTmpl.Execute(c.Response(), tmplData)
 		}
+
+		return c.Redirect(http.StatusTemporaryRedirect, "/customers")
 	}
 
-	return c.Redirect(http.StatusTemporaryRedirect, "/customers")
+	return createCustomerTmpl.Execute(c.Response(), tmplData)
 }
 
 //func ListCustomers(c echo.Context) error {
