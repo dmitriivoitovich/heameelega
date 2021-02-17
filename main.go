@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/dmitriivoitovich/wallester-test-assignment/config"
-	"github.com/dmitriivoitovich/wallester-test-assignment/controller"
-	"github.com/dmitriivoitovich/wallester-test-assignment/dao/db"
+	"github.com/dmitriivoitovich/heameelega/config"
+	"github.com/dmitriivoitovich/heameelega/controller"
+	"github.com/dmitriivoitovich/heameelega/dao/db"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"

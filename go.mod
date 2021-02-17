@@ -1,4 +1,4 @@
-module github.com/dmitriivoitovich/wallester-test-assignment
+module github.com/dmitriivoitovich/heameelega
 
 go 1.14
 

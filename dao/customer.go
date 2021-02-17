@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/dmitriivoitovich/wallester-test-assignment/dao/db"
+	"github.com/dmitriivoitovich/heameelega/dao/db"
 	"github.com/google/uuid"
 	"strings"
 )

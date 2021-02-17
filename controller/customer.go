@@ -2,10 +2,10 @@ package controller
 
 import (
 	"fmt"
-	"github.com/dmitriivoitovich/wallester-test-assignment/controller/request"
-	"github.com/dmitriivoitovich/wallester-test-assignment/dao"
-	"github.com/dmitriivoitovich/wallester-test-assignment/dao/db"
-	"github.com/dmitriivoitovich/wallester-test-assignment/service"
+	"github.com/dmitriivoitovich/heameelega/controller/request"
+	"github.com/dmitriivoitovich/heameelega/dao"
+	"github.com/dmitriivoitovich/heameelega/dao/db"
+	"github.com/dmitriivoitovich/heameelega/service"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"

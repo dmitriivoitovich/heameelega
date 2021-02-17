@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"github.com/dmitriivoitovich/wallester-test-assignment/config"
+	"github.com/dmitriivoitovich/heameelega/config"
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

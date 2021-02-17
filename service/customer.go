@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/dmitriivoitovich/wallester-test-assignment/controller/request"
-	"github.com/dmitriivoitovich/wallester-test-assignment/dao"
-	"github.com/dmitriivoitovich/wallester-test-assignment/dao/db"
+	"github.com/dmitriivoitovich/heameelega/controller/request"
+	"github.com/dmitriivoitovich/heameelega/dao"
+	"github.com/dmitriivoitovich/heameelega/dao/db"
 	"github.com/google/uuid"
 	"math"
 	"regexp"
