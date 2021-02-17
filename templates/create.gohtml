@@ -1,166 +1,10 @@
-<!doctype html>
-<html lang="en">
+{{ template "header" "New customer" }}
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-
-    <title>New customer - Hea Meelega</title>
-
-    <link rel="apple-touch-icon" sizes="180x180" href="/public/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/public/favicon/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/public/favicon/favicon-32x32.png">
-    <link rel="manifest" href="/public/favicon/site.webmanifest">
-
-    <style>
-        body {
-            font-size: .875rem;
-        }
-
-        .feather {
-            width: 16px;
-            height: 16px;
-            vertical-align: text-bottom;
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            /* rtl:raw:
-            right: 0;
-            */
-            bottom: 0;
-            /* rtl:remove */
-            left: 0;
-            z-index: 100; /* Behind the navbar */
-            padding: 48px 0 0; /* Height of navbar */
-            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                top: 5rem;
-            }
-        }
-
-        .sidebar-sticky {
-            position: relative;
-            top: 0;
-            height: calc(100vh - 48px);
-            padding-top: .5rem;
-            overflow-x: hidden;
-            overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-        }
-
-        .sidebar .nav-link {
-            font-weight: 500;
-            color: #333;
-        }
-
-        .sidebar .nav-link .feather {
-            margin-right: 4px;
-            color: #727272;
-        }
-
-        .sidebar .nav-link.active {
-            color: #007bff;
-        }
-
-        .sidebar .nav-link:hover .feather,
-        .sidebar .nav-link.active .feather {
-            color: inherit;
-        }
-
-        .sidebar-heading {
-            font-size: .75rem;
-            text-transform: uppercase;
-        }
-
-        .navbar-brand {
-            padding-top: .75rem;
-            padding-bottom: .75rem;
-            font-size: 1rem;
-            background-color: rgba(0, 0, 0, .25);
-            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
-        }
-
-        .navbar .navbar-toggler {
-            top: .25rem;
-            right: 1rem;
-        }
-
-        .navbar .form-control {
-            padding: .75rem 1rem;
-            border-width: 0;
-            border-radius: 0;
-        }
-
-        .form-control-dark {
-            color: #fff;
-            background-color: rgba(255, 255, 255, .1);
-            border-color: rgba(255, 255, 255, .1);
-        }
-
-        .form-control-dark:focus {
-            color: #fff;
-            background-color: rgba(255, 255, 255, .1);
-            box-shadow: 0 0 0 0 rgba(255, 255, 255, .25);
-        }
-
-        main form {
-            max-width: 768px;
-        }
-    </style>
-</head>
-
-<body>
-
-<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/">Hea Meelega</a>
-
-    <button class="navbar-toggler position-absolute d-md-none collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#sidebarMenu"
-            aria-controls="sidebarMenu"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
-
-    <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-            <a class="nav-link" href="/logout">Sign out</a>
-        </li>
-    </ul>
-</header>
+{{ template "navbar" "" }}
 
 <div class="container-fluid">
     <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="/dashboard">
-                            <span data-feather="home"></span>
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/customers">
-                            <span data-feather="users"></span>
-                            Customers
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        {{ template "sidebar" "customers" }}
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
@@ -170,7 +14,7 @@
             <form class="row g-3" method="post">
                 {{ if .Error }}
                     <div class="col-md-12">
-                        <div class="alert alert-danger p-1 mb-0" role="alert">
+                        <div class="alert alert-danger py-1 mb-0" role="alert">
                             {{ .Error }}
                         </div>
                     </div>
@@ -181,7 +25,7 @@
                             type="text"
                             class="form-control form-control-sm {{ if inSlice .InvalidFields "firstName" }} is-invalid {{ end }}"
                             name="firstName"
-                            value="{{ .Customer.FirstName }}"
+                            value="{{ .Request.FirstName }}"
                             placeholder="First name"
                             maxlength="100"
                             required/>
@@ -192,7 +36,7 @@
                             type="text"
                             class="form-control form-control-sm {{ if inSlice .InvalidFields "lastName" }} is-invalid {{ end }}"
                             name="lastName"
-                            value="{{ .Customer.LastName }}"
+                            value="{{ .Request.LastName }}"
                             placeholder="Last name"
                             maxlength="100"
                             required/>
@@ -203,7 +47,7 @@
                             type="email"
                             class="form-control form-control-sm {{ if inSlice .InvalidFields "email" }} is-invalid {{ end }}"
                             name="email"
-                            value="{{ .Customer.Email }}"
+                            value="{{ .Request.Email }}"
                             placeholder="Email"
                             maxlength="255"
                             required/>
@@ -215,7 +59,7 @@
                         <input
                                 type="date"
                                 class="form-control form-control-sm {{ if inSlice .InvalidFields "birthDate" }} is-invalid {{ end }}"
-                                value="{{ .Customer.BirthDate }}"
+                                value="{{ .Request.BirthDate }}"
                                 name="birthDate"
                                 required/>
                     </div>
@@ -228,10 +72,10 @@
                                 class="form-select form-select-sm {{ if inSlice .InvalidFields "gender" }} is-invalid {{ end }}"
                                 name='gender'
                                 required>
-                            <option value="male" {{ if eq .Customer.Gender "male" }} selected {{ end }}>
+                            <option value="male" {{ if eq .Request.Gender "male" }} selected {{ end }}>
                                 Male
                             </option>
-                            <option value="female" {{ if eq .Customer.Gender "female" }} selected {{ end }}>
+                            <option value="female" {{ if eq .Request.Gender "female" }} selected {{ end }}>
                                 Female
                             </option>
                         </select>
@@ -243,7 +87,7 @@
                             type="text"
                             class="form-control form-control-sm {{ if inSlice .InvalidFields "address" }} is-invalid {{ end }}"
                             name="address"
-                            value="{{ .Customer.Address }}"
+                            value="{{ .Request.Address }}"
                             placeholder="Address"
                             min="1"
                             maxlength="200"/>
@@ -257,19 +101,4 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
-        crossorigin="anonymous"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
-        integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
-        crossorigin="anonymous"></script>
-
-<script>
-    /* globals Chart:false, feather:false */
-
-    feather.replace()
-</script>
-
-</body>
-</html>
+{{ template "footer" }}

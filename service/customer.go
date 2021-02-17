@@ -5,8 +5,39 @@ import (
 	"github.com/dmitriivoitovich/wallester-test-assignment/dao"
 	"github.com/dmitriivoitovich/wallester-test-assignment/dao/db"
 	"github.com/google/uuid"
+	"math"
+	"regexp"
 	"strings"
 )
+
+const pageSize = 10
+
+var (
+	spacesRegExp = regexp.MustCompile(`\s+`)
+)
+
+func SearchCustomers(req request.SearchCustomersNormalized) ([]db.Customer, uint32, error) {
+	s := spacesRegExp.ReplaceAllString(req.Filter, " ")
+
+	filters := make([]string, 0)
+	if s != "" {
+		filters = strings.Split(s, " ")
+	}
+
+	customers, err := dao.Customers(req.Page, pageSize, req.Order, req.Direction, filters...)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	total, err := dao.CustomersCount(filters...)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	pages := uint32(math.Ceil(float64(total) / float64(pageSize)))
+
+	return customers, pages, nil
+}
 
 func CreateCustomer(req request.CreateCustomer) error {
 	customer, err := convertReqToDB(req)

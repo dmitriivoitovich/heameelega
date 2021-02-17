@@ -40,7 +40,7 @@ func main() {
 	// routes
 	e.Static("/public", "public")
 	//e.GET("/", controller.GetHome)
-	//e.GET("/customers", controller.GetListCustomers)
+	e.GET("/customers", controller.GetSearchCustomers)
 	e.GET("/customers/new", controller.GetCreateCustomer)
 	e.POST("/customers/new", controller.PostCreateCustomer)
 	//e.GET("/customers/:id", controller.GetShowCustomer)
