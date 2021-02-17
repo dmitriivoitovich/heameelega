@@ -29,6 +29,7 @@ func main() {
 	// echo instance
 	e := echo.New()
 	e.HideBanner = true
+	e.HTTPErrorHandler = httpErrorHandler
 
 	// DB connection
 	dbConf := config.DBConfig()
@@ -43,7 +44,7 @@ func main() {
 	e.GET("/customers", controller.GetSearchCustomers)
 	e.GET("/customers/new", controller.GetCreateCustomer)
 	e.POST("/customers/new", controller.PostCreateCustomer)
-	//e.GET("/customers/:id", controller.GetShowCustomer)
+	e.GET("/customers/:id", controller.GetViewCustomer)
 	//e.GET("/customers/:id/edit", controller.GetEditCustomer)
 	//e.POST("/customers/:id/edit", controller.PostEditCustomer)
 
@@ -76,4 +77,22 @@ func startWebServer(e *echo.Echo) {
 	if err := e.StartServer(s); err != nil {
 		e.Logger.Info("shutting down the server")
 	}
+}
+
+func httpErrorHandler(err error, c echo.Context) {
+	code := http.StatusInternalServerError
+	if he, ok := err.(*echo.HTTPError); ok {
+		code = he.Code
+	}
+
+	t := controller.Error500Tmpl
+	if code == http.StatusNotFound {
+		t = controller.Error400Tmpl
+	}
+
+	if err := t.Execute(c.Response(), nil); err != nil {
+		c.Logger().Error(err)
+	}
+
+	c.Logger().Error(err)
 }

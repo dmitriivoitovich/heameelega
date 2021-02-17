@@ -42,7 +42,7 @@
                             required/>
                 </div>
 
-                <div class="col-12">
+                <div class="col-md-12">
                     <input
                             type="email"
                             class="form-control form-control-sm {{ if inSlice .InvalidFields "email" }} is-invalid {{ end }}"
@@ -82,18 +82,17 @@
                     </div>
                 </div>
 
-                <div class="col-12">
+                <div class="col-md-12">
                     <input
                             type="text"
                             class="form-control form-control-sm {{ if inSlice .InvalidFields "address" }} is-invalid {{ end }}"
                             name="address"
                             value="{{ .Request.Address }}"
                             placeholder="Address"
-                            min="1"
                             maxlength="200"/>
                 </div>
 
-                <div class="col-12 pt-2">
+                <div class="col-md-12 pt-2">
                     <button type="submit" class="btn btn-outline-secondary btn-sm">Create</button>
                 </div>
             </form>

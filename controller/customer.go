@@ -3,9 +3,12 @@ package controller
 import (
 	"fmt"
 	"github.com/dmitriivoitovich/wallester-test-assignment/controller/request"
+	"github.com/dmitriivoitovich/wallester-test-assignment/dao"
 	"github.com/dmitriivoitovich/wallester-test-assignment/dao/db"
 	"github.com/dmitriivoitovich/wallester-test-assignment/service"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -79,22 +82,49 @@ var (
 		template.New("search.gohtml").
 			Funcs(funcMap).
 			ParseFiles(
-				"templates/search.gohtml",
-				"templates/layout/header.gohtml",
-				"templates/layout/footer.gohtml",
-				"templates/layout/navbar.gohtml",
-				"templates/layout/sidebar.gohtml",
+				"template/customer/search.gohtml",
+				"template/layout/header.gohtml",
+				"template/layout/footer.gohtml",
+				"template/layout/navbar.gohtml",
+				"template/layout/sidebar.gohtml",
 			),
 	)
 	createCustomerTmpl = template.Must(
 		template.New("create.gohtml").
 			Funcs(funcMap).
 			ParseFiles(
-				"templates/create.gohtml",
-				"templates/layout/header.gohtml",
-				"templates/layout/footer.gohtml",
-				"templates/layout/navbar.gohtml",
-				"templates/layout/sidebar.gohtml",
+				"template/customer/create.gohtml",
+				"template/layout/header.gohtml",
+				"template/layout/footer.gohtml",
+				"template/layout/navbar.gohtml",
+				"template/layout/sidebar.gohtml",
+			),
+	)
+	viewCustomerTmpl = template.Must(
+		template.New("view.gohtml").
+			Funcs(funcMap).
+			ParseFiles(
+				"template/customer/view.gohtml",
+				"template/layout/header.gohtml",
+				"template/layout/footer.gohtml",
+				"template/layout/navbar.gohtml",
+				"template/layout/sidebar.gohtml",
+			),
+	)
+	Error500Tmpl = template.Must(
+		template.New("500.gohtml").
+			ParseFiles(
+				"template/error/500.gohtml",
+				"template/layout/header.gohtml",
+				"template/layout/footer.gohtml",
+			),
+	)
+	Error400Tmpl = template.Must(
+		template.New("404.gohtml").
+			ParseFiles(
+				"template/error/404.gohtml",
+				"template/layout/header.gohtml",
+				"template/layout/footer.gohtml",
 			),
 	)
 )
@@ -157,22 +187,20 @@ func GetSearchCustomers(c echo.Context) error {
 	return searchCustomerTmpl.Execute(c.Response(), tmplData)
 }
 
-//func EditCustomer(c echo.Context) error {
-//
-// http.NotFound(w, r)
-// return
-//
-//	id, err := uuid.Parse(c.Param("id"))
-//	if err != nil {
-//		return err
-//	}
-//
-//	customer, err := dao.Customer(id)
-//	if err != nil {
-//		return err
-//	}
-//
-//	t, _ := template.ParseFiles("edit.gohtml")
-//
-//	return t.Execute(c.Response(), customer)
-//}
+func GetViewCustomer(c echo.Context) error {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "failed to parse customer id from request")
+	}
+
+	customer, err := dao.Customer(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return echo.NewHTTPError(http.StatusNotFound, "failed to find a customer by id")
+		}
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to load customer")
+	}
+
+	return viewCustomerTmpl.Execute(c.Response(), customer)
+}
