@@ -1,0 +1,109 @@
+{{ template "header" (print .Request.FirstName " " .Request.LastName) }}
+
+{{ template "navbar" "" }}
+
+<div class="container-fluid">
+    <div class="row">
+        {{ template "sidebar" "customers" }}
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+                <h1 class="h2">{{ print .Request.FirstName " " .Request.LastName }}</h1>
+            </div>
+
+            <form class="row g-3" method="post">
+                {{ if .Error }}
+                    <div class="col-md-12">
+                        <div class="alert alert-danger py-1 mb-0" role="alert">
+                            {{ .Error }}
+                        </div>
+                    </div>
+                {{ end }}
+
+                <div class="col-md-6">
+                    <input
+                            type="text"
+                            class="form-control form-control-sm {{ if inSlice .InvalidFields "firstName" }} is-invalid {{ end }}"
+                            name="firstName"
+                            value="{{ .Request.FirstName }}"
+                            placeholder="First name"
+                            maxlength="100"
+                            required/>
+                </div>
+
+                <div class="col-md-6">
+                    <input
+                            type="text"
+                            class="form-control form-control-sm {{ if inSlice .InvalidFields "lastName" }} is-invalid {{ end }}"
+                            name="lastName"
+                            value="{{ .Request.LastName }}"
+                            placeholder="Last name"
+                            maxlength="100"
+                            required/>
+                </div>
+
+                <div class="col-md-12">
+                    <input
+                            type="email"
+                            class="form-control form-control-sm {{ if inSlice .InvalidFields "email" }} is-invalid {{ end }}"
+                            name="email"
+                            value="{{ .Request.Email }}"
+                            placeholder="Email"
+                            maxlength="255"
+                            required/>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="input-group input-group-sm has-validation">
+                        <span class="input-group-text">Birth date</span>
+                        <input
+                                type="date"
+                                class="form-control form-control-sm {{ if inSlice .InvalidFields "birthDate" }} is-invalid {{ end }}"
+                                value="{{ .Request.BirthDate }}"
+                                name="birthDate"
+                                required/>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="input-group input-group-sm has-validation">
+                        <span class="input-group-text">Gender</span>
+                        <select
+                                class="form-select form-select-sm {{ if inSlice .InvalidFields "gender" }} is-invalid {{ end }}"
+                                name='gender'
+                                required>
+                            <option value="male" {{ if eq .Request.Gender "male" }} selected {{ end }}>
+                                Male
+                            </option>
+                            <option value="female" {{ if eq .Request.Gender "female" }} selected {{ end }}>
+                                Female
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <input
+                            type="text"
+                            class="form-control form-control-sm {{ if inSlice .InvalidFields "address" }} is-invalid {{ end }}"
+                            name="address"
+                            value="{{ .Request.Address }}"
+                            placeholder="Address"
+                            maxlength="200"/>
+                </div>
+
+                <input type="hidden" name="loadedAt" value="{{ .Request.LoadedAt.Format "2006-01-02T15:04:05Z07:00" }}"/>
+
+                <div class="col-md-12 pt-2">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">Save</button>
+
+                    <a href="/customers/{{ .Request.ID }}" class="btn btn-sm btn-outline-secondary" role="button">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+
+{{ template "footer" }}

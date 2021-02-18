@@ -1,6 +1,7 @@
 package request
 
 import (
+	"github.com/google/uuid"
 	"strings"
 	"time"
 )
@@ -33,6 +34,17 @@ type CreateCustomer struct {
 	Address   string `form:"address" json:"address" valid:"printableascii,maxstringlength(200),optional"`
 }
 
+type EditCustomer struct {
+	ID        uuid.UUID `param:"id" json:"id" valid:"required"`
+	FirstName string    `form:"firstName" json:"firstName" valid:"printableascii,maxstringlength(100),required"`
+	LastName  string    `form:"lastName" json:"lastName" valid:"printableascii,maxstringlength(100),required"`
+	BirthDate string    `form:"birthDate" json:"birthDate" valid:"age(18|60),required"`
+	Gender    string    `form:"gender" json:"gender" valid:"gender,required"`
+	Email     string    `form:"email" json:"email" valid:"email,maxstringlength(255),required"`
+	Address   string    `form:"address" json:"address" valid:"printableascii,maxstringlength(200),optional"`
+	LoadedAt  time.Time `form:"loadedAt" json:"loadedAt" valid:"required"`
+}
+
 func (c *CreateCustomer) BirthDateTime() (*time.Time, error) {
 	date, err := time.Parse(dateFormat, c.BirthDate)
 	if err != nil {
@@ -44,6 +56,14 @@ func (c *CreateCustomer) BirthDateTime() (*time.Time, error) {
 
 func (c *CreateCustomer) Validate() []string {
 	return validateStruct(*c)
+}
+
+func (c *EditCustomer) Validate() []string {
+	return validateStruct(*c)
+}
+
+func (c *EditCustomer) BirthDateTime() (time.Time, error) {
+	return time.Parse(dateFormat, c.BirthDate)
 }
 
 func (c *SearchCustomers) Validate() []string {

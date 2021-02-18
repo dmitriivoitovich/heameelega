@@ -53,7 +53,7 @@
                 </div>
 
                 <div class="col-md-12">
-                    <input type="text" class="form-control form-control-sm" value="{{ .Address }}" disabled/>
+                    <input type="text" class="form-control form-control-sm" value="{{ if .Address }} {{ .Address }} {{ end }}" disabled/>
                 </div>
             </form>
         </main>

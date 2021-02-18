@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/dmitriivoitovich/heameelega/controller/request"
 	"github.com/dmitriivoitovich/heameelega/dao"
 	"github.com/dmitriivoitovich/heameelega/dao/db"
@@ -50,6 +51,31 @@ func CreateCustomer(req request.CreateCustomer) error {
 	}
 
 	return nil
+}
+
+func UpdateCustomer(req request.EditCustomer, customer db.Customer) error {
+	if customer.UpdatedAt.After(req.LoadedAt) {
+		return fmt.Errorf("can't overwrite customer details")
+	}
+
+	customer.FirstName = req.FirstName
+	customer.LastName = req.LastName
+
+	birthDate, err := req.BirthDateTime()
+	if err != nil {
+		return err
+	}
+
+	customer.BirthDate = birthDate
+	customer.Gender = req.Gender == "male"
+	customer.Email = req.Email
+
+	customer.Address = nil
+	if req.Address != "" {
+		customer.Address = &req.Address
+	}
+
+	return dao.UpdateCustomer(customer)
 }
 
 func convertReqToDB(req request.CreateCustomer) (*db.Customer, error) {

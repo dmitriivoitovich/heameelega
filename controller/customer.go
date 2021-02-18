@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 type createCustomerTmplData struct {
@@ -26,6 +27,12 @@ type searchCustomerTmplData struct {
 	InvalidFields []string
 	Customers     []db.Customer
 	Pages         uint32
+	Error         string
+}
+
+type editCustomerTmplData struct {
+	Request       request.EditCustomer
+	InvalidFields []string
 	Error         string
 }
 
@@ -105,6 +112,17 @@ var (
 			Funcs(funcMap).
 			ParseFiles(
 				"template/customer/view.gohtml",
+				"template/layout/header.gohtml",
+				"template/layout/footer.gohtml",
+				"template/layout/navbar.gohtml",
+				"template/layout/sidebar.gohtml",
+			),
+	)
+	editCustomerTmpl = template.Must(
+		template.New("edit.gohtml").
+			Funcs(funcMap).
+			ParseFiles(
+				"template/customer/edit.gohtml",
 				"template/layout/header.gohtml",
 				"template/layout/footer.gohtml",
 				"template/layout/navbar.gohtml",
@@ -203,4 +221,68 @@ func GetViewCustomer(c echo.Context) error {
 	}
 
 	return viewCustomerTmpl.Execute(c.Response(), customer)
+}
+
+func GetEditCustomer(c echo.Context) error {
+	tmplData := &editCustomerTmplData{}
+	if err := c.Bind(&tmplData.Request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "failed to bind request")
+	}
+
+	customer, err := dao.Customer(tmplData.Request.ID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return echo.NewHTTPError(http.StatusNotFound, "failed to find customer by id")
+		}
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to load customer")
+	}
+
+	tmplData.Request.FirstName = customer.FirstName
+	tmplData.Request.LastName = customer.LastName
+	tmplData.Request.BirthDate = customer.BirthDate.Format("2006-01-02")
+	if customer.Gender {
+		tmplData.Request.Gender = "male"
+	} else {
+		tmplData.Request.Gender = "female"
+	}
+
+	tmplData.Request.Email = customer.Email
+	if customer.Address != nil {
+		tmplData.Request.Address = *customer.Address
+	}
+
+	tmplData.Request.LoadedAt = time.Now()
+
+	return editCustomerTmpl.Execute(c.Response(), tmplData)
+}
+
+func PostEditCustomer(c echo.Context) error {
+	tmplData := &editCustomerTmplData{}
+	if err := c.Bind(&tmplData.Request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "failed to bind request")
+	}
+
+	tmplData.InvalidFields = tmplData.Request.Validate()
+	if len(tmplData.InvalidFields) > 0 {
+		return editCustomerTmpl.Execute(c.Response(), tmplData)
+	}
+
+	customer, err := dao.Customer(tmplData.Request.ID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return echo.NewHTTPError(http.StatusNotFound, "failed to find customer by id")
+		}
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to load customer")
+	}
+
+	if err := service.UpdateCustomer(tmplData.Request, *customer); err != nil {
+		c.Logger().Error(err)
+		tmplData.Error = "Something went wrong"
+
+		return editCustomerTmpl.Execute(c.Response(), tmplData)
+	}
+
+	return c.Redirect(http.StatusSeeOther, "/customers/"+customer.ID.String())
 }

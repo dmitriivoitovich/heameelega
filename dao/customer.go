@@ -25,6 +25,38 @@ func Customer(id uuid.UUID) (*db.Customer, error) {
 	return customer, nil
 }
 
+func CustomerByEmail(email string) (*db.Customer, error) {
+	customer := &db.Customer{}
+
+	err := db.DB.
+		Where("EMAIL = ?", email).
+		First(customer).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return customer, nil
+}
+
+func UpdateCustomer(customer db.Customer) error {
+	return db.DB.
+		Model(&db.Customer{}).
+		Where("ID = ?", customer.ID).
+		Updates(
+			map[string]interface{}{
+				"FirstName": customer.FirstName,
+				"LastName":  customer.LastName,
+				"BirthDate": customer.BirthDate,
+				"Gender":    customer.Gender,
+				"Email":     customer.Email,
+				"Address":   customer.Address,
+			},
+		).
+		Error
+}
+
 func Customers(page, pageSize uint32, order, direction string, filters ...string) ([]db.Customer, error) {
 	customers := make([]db.Customer, 0)
 

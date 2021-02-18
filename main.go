@@ -26,6 +26,9 @@ const (
 )
 
 func main() {
+	// set app timezone
+	time.Local = time.UTC
+
 	// echo instance
 	e := echo.New()
 	e.HideBanner = true
@@ -46,8 +49,8 @@ func main() {
 	e.GET("/customers/new", controller.GetCreateCustomer)
 	e.POST("/customers/new", controller.PostCreateCustomer)
 	e.GET("/customers/:id", controller.GetViewCustomer)
-	//e.GET("/customers/:id/edit", controller.GetEditCustomer)
-	//e.POST("/customers/:id/edit", controller.PostEditCustomer)
+	e.GET("/customers/:id/edit", controller.GetEditCustomer)
+	e.POST("/customers/:id/edit", controller.PostEditCustomer)
 
 	// http server instance
 	go startWebServer(e)
