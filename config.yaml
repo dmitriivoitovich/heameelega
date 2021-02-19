@@ -1,0 +1,9 @@
+app:
+  host: localhost
+
+db:
+  host: localhost
+  port: 5432
+  user: wallester
+  password: 12345
+  name: wallester

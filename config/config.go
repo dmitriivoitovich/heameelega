@@ -1,5 +1,16 @@
 package config
 
+import (
+	"github.com/spf13/viper"
+	"strings"
+)
+
+const (
+	configName = "config"
+	configType = "yaml"
+	envPrefix  = "VIPER"
+)
+
 type DBConf struct {
 	Host     string
 	User     string
@@ -8,12 +19,36 @@ type DBConf struct {
 	Port     uint32
 }
 
+func AppHost() string {
+	return getStr("app.host")
+}
+
 func DBConfig() DBConf {
 	return DBConf{
-		Host:     "localhost",
-		Port:     5432,
-		User:     "wallester",
-		Password: "12345",
-		DBName:   "wallester",
+		Host:     getStr("db.host"),
+		Port:     getUInt32("db.port"),
+		User:     getStr("db.user"),
+		Password: getStr("db.password"),
+		DBName:   getStr("db.name"),
 	}
+}
+
+func Read() error {
+	viper.SetConfigName(configName)
+	viper.SetConfigType(configType)
+	viper.AddConfigPath(".")
+	viper.SetEnvPrefix(envPrefix)
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
+	viper.AllowEmptyEnv(true)
+
+	return viper.ReadInConfig()
+}
+
+func getStr(key string) string {
+	return viper.GetString(key)
+}
+
+func getUInt32(key string) uint32 {
+	return viper.GetUint32(key)
 }

@@ -34,6 +34,11 @@ func main() {
 	e.HideBanner = true
 	e.HTTPErrorHandler = httpErrorHandler
 
+	// read configuration file
+	if err := config.Read(); err != nil {
+		e.Logger.Fatal(err, "failed to read config file")
+	}
+
 	// DB connection
 	dbConf := config.DBConfig()
 	go db.InitConn(dbConf, e.Logger)
