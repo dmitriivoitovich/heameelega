@@ -32,7 +32,6 @@ linters:
     - goprintffuncname
     - gosec
     - ifshort
-    - interfacer
     - makezero
     - maligned
     - misspell
