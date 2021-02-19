@@ -18,7 +18,7 @@ type Customer struct {
 	LastName  string     `gorm:"column:last_name;type:varchar(100);not null"`
 	BirthDate time.Time  `gorm:"column:birth_date;type:date;not null"`
 	Gender    bool       `gorm:"column:gender;type:boolean;not null"`
-	Email     string     `gorm:"column:email;type:varchar(255);not null"`
+	Email     string     `gorm:"column:email;type:varchar(255);not null;uniqueIndex"`
 	Address   *string    `gorm:"column:address;type:varchar(200);default:null"`
 	CreatedAt time.Time  `gorm:"column:created_at;type:timestamp without time zone;not null"`
 	UpdatedAt time.Time  `gorm:"column:updated_at;type:timestamp without time zone;not null"`

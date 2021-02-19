@@ -12,6 +12,7 @@ import (
 	"github.com/dmitriivoitovich/heameelega/helper"
 	"github.com/dmitriivoitovich/heameelega/service"
 	"github.com/google/uuid"
+	"github.com/jackc/pgconn"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -144,29 +145,28 @@ func PostCreateCustomer(c echo.Context) error {
 	tmplData := &createCustomerTmplData{}
 
 	if err := c.Bind(&tmplData.Request); err != nil {
-		c.Logger().Error(err)
+		return echo.NewHTTPError(http.StatusBadRequest, "failed to bind request")
+	}
 
-		tmplData.Error = "Something is wrong with your request"
+	tmplData.InvalidFields = tmplData.Request.Validate()
 
+	if len(tmplData.InvalidFields) > 0 {
 		return createCustomerTmpl.Execute(c.Response(), tmplData)
 	}
 
-	invalidFields := tmplData.Request.Validate()
-	tmplData.InvalidFields = invalidFields
-
-	if len(invalidFields) == 0 {
-		if err := service.CreateCustomer(tmplData.Request); err != nil {
-			c.Logger().Error(err)
-
-			tmplData.Error = "Something went wrong"
+	if err := service.CreateCustomer(tmplData.Request); err != nil {
+		var pgError *pgconn.PgError
+		if errors.As(err, &pgError) && pgError.Code == "23505" {
+			tmplData.InvalidFields = append(tmplData.InvalidFields, "email")
+			tmplData.Error = "Email taken"
 
 			return createCustomerTmpl.Execute(c.Response(), tmplData)
 		}
 
-		return c.Redirect(http.StatusSeeOther, helper.PageURLCustomers())
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create customer")
 	}
 
-	return createCustomerTmpl.Execute(c.Response(), tmplData)
+	return c.Redirect(http.StatusSeeOther, helper.PageURLCustomers())
 }
 
 func GetSearchCustomers(c echo.Context) error {
@@ -235,9 +235,8 @@ func GetEditCustomer(c echo.Context) error {
 	tmplData.Request.LastName = customer.LastName
 	tmplData.Request.BirthDate = customer.BirthDate.Format("2006-01-02")
 
-	if customer.Gender {
-		tmplData.Request.Gender = "male"
-	} else {
+	tmplData.Request.Gender = "male"
+	if !customer.Gender {
 		tmplData.Request.Gender = "female"
 	}
 
@@ -272,11 +271,15 @@ func PostEditCustomer(c echo.Context) error {
 	}
 
 	if err := service.UpdateCustomer(tmplData.Request, *customer); err != nil {
-		c.Logger().Error(err)
+		var pgError *pgconn.PgError
+		if errors.As(err, &pgError) && pgError.Code == "23505" {
+			tmplData.InvalidFields = append(tmplData.InvalidFields, "email")
+			tmplData.Error = "Email taken"
 
-		tmplData.Error = "Something went wrong"
+			return editCustomerTmpl.Execute(c.Response(), tmplData)
+		}
 
-		return editCustomerTmpl.Execute(c.Response(), tmplData)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update customer")
 	}
 
 	return c.Redirect(http.StatusSeeOther, helper.PageURLViewCustomer(customer.ID))
