@@ -18,7 +18,6 @@ func Customer(id uuid.UUID) (*db.Customer, error) {
 		Where("ID = ?", id).
 		First(customer).
 		Error
-
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +32,6 @@ func CustomerByEmail(email string) (*db.Customer, error) {
 		Where("EMAIL = ?", email).
 		First(customer).
 		Error
-
 	if err != nil {
 		return nil, err
 	}

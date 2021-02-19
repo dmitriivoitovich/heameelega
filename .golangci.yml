@@ -1,0 +1,78 @@
+#linters-settings:
+#  lll:
+#    line-length: 140
+
+linters:
+  disable-all: true
+  enable:
+    - asciicheck
+    - bodyclose
+    - cyclop
+    - depguard
+    - dogsled
+    - dupl
+    - durationcheck
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - forbidigo
+    - funlen
+    - gocognit
+    - gocritic
+    - gocyclo
+    - godot
+    - godox
+    - goerr113
+    - gofmt
+    - goheader
+    - goimports
+    - golint
+    - gomnd
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - ifshort
+    - interfacer
+    - makezero
+    - maligned
+    - misspell
+    - nakedret
+    - nestif
+    - nlreturn
+    - noctx
+    - nolintlint
+    - paralleltest
+    - prealloc
+    - predeclared
+    - revive
+    - rowserrcheck
+    - scopelint
+    - sqlclosecheck
+    - stylecheck
+    - testpackage
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - whitespace
+    - wsl
+    - unused
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - varcheck
+    - lll
+    - gci
+    - gofumpt
+
+  # don't enable:
+  # - exhaustivestruct: Checks if all struct's fields are initialized [fast: true, auto-fix: false]
+  # - gochecknoglobals: check that no global variables exist [fast: true, auto-fix: false]
+  # - gochecknoinits: Checks that no init functions are present in Go code [fast: true, auto-fix: false]
+  # - goconst: Finds repeated strings that could be replaced by a constant [fast: true, auto-fix: false]
+  # - wrapcheck: Checks that errors returned from external packages are wrapped [fast: true, auto-fix: false]

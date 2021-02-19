@@ -14,9 +14,7 @@ const (
 	connAttemptsDelay = time.Second * 5
 )
 
-var (
-	DB *gorm.DB
-)
+var DB *gorm.DB
 
 func InitConn(conf config.DBConf, logger echo.Logger) {
 	dsn := fmt.Sprintf(
