@@ -4,6 +4,6 @@ app:
 db:
   host: localhost
   port: 5432
-  user: wallester
+  user: heameelega
   password: 12345
-  name: wallester
+  name: heameelega
