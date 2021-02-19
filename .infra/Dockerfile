@@ -18,6 +18,7 @@ WORKDIR "/app"
 
 # copy binary and static files from the build container
 COPY --from=builder /go/bin/app /app/app
+COPY --from=builder /go/src/config.yml /app
 COPY --from=builder /go/src/public /app/public
 COPY --from=builder /go/src/template /app/template
 
