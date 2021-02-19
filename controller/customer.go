@@ -1,7 +1,14 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
+	"html/template"
+	"net/http"
+	"net/url"
+	"strconv"
+	"time"
+
 	"github.com/dmitriivoitovich/heameelega/controller/request"
 	"github.com/dmitriivoitovich/heameelega/dao"
 	"github.com/dmitriivoitovich/heameelega/dao/db"
@@ -9,11 +16,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
-	"html/template"
-	"net/http"
-	"net/url"
-	"strconv"
-	"time"
 )
 
 type createCustomerTmplData struct {
@@ -156,6 +158,7 @@ func PostCreateCustomer(c echo.Context) error {
 
 	if err := c.Bind(&tmplData.Request); err != nil {
 		c.Logger().Error(err)
+
 		tmplData.Error = "Something is wrong with your request"
 
 		return createCustomerTmpl.Execute(c.Response(), tmplData)
@@ -167,6 +170,7 @@ func PostCreateCustomer(c echo.Context) error {
 	if len(invalidFields) == 0 {
 		if err := service.CreateCustomer(tmplData.Request); err != nil {
 			c.Logger().Error(err)
+
 			tmplData.Error = "Something went wrong"
 
 			return createCustomerTmpl.Execute(c.Response(), tmplData)
@@ -183,6 +187,7 @@ func GetSearchCustomers(c echo.Context) error {
 
 	if err := c.Bind(&tmplData.Request); err != nil {
 		c.Logger().Error(err)
+
 		tmplData.Error = "Something is wrong with your request"
 	}
 
@@ -194,6 +199,7 @@ func GetSearchCustomers(c echo.Context) error {
 	customers, pages, err := service.SearchCustomers(tmplData.Request.Normalized())
 	if err != nil {
 		c.Logger().Error(err)
+
 		tmplData.Error = "Something went wrong"
 
 		return searchCustomerTmpl.Execute(c.Response(), tmplData)
@@ -213,7 +219,7 @@ func GetViewCustomer(c echo.Context) error {
 
 	customer, err := dao.Customer(id)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, "failed to find a customer by id")
 		}
 
@@ -231,7 +237,7 @@ func GetEditCustomer(c echo.Context) error {
 
 	customer, err := dao.Customer(tmplData.Request.ID)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, "failed to find customer by id")
 		}
 
@@ -241,6 +247,7 @@ func GetEditCustomer(c echo.Context) error {
 	tmplData.Request.FirstName = customer.FirstName
 	tmplData.Request.LastName = customer.LastName
 	tmplData.Request.BirthDate = customer.BirthDate.Format("2006-01-02")
+
 	if customer.Gender {
 		tmplData.Request.Gender = "male"
 	} else {
@@ -270,7 +277,7 @@ func PostEditCustomer(c echo.Context) error {
 
 	customer, err := dao.Customer(tmplData.Request.ID)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, "failed to find customer by id")
 		}
 
@@ -279,6 +286,7 @@ func PostEditCustomer(c echo.Context) error {
 
 	if err := service.UpdateCustomer(tmplData.Request, *customer); err != nil {
 		c.Logger().Error(err)
+
 		tmplData.Error = "Something went wrong"
 
 		return editCustomerTmpl.Execute(c.Response(), tmplData)

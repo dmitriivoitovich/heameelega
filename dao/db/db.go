@@ -2,11 +2,12 @@ package db
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/dmitriivoitovich/heameelega/config"
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"time"
 )
 
 const (

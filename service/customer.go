@@ -1,20 +1,23 @@
 package service
 
 import (
-	"fmt"
+	"errors"
+	"math"
+	"regexp"
+	"strings"
+
 	"github.com/dmitriivoitovich/heameelega/controller/request"
 	"github.com/dmitriivoitovich/heameelega/dao"
 	"github.com/dmitriivoitovich/heameelega/dao/db"
 	"github.com/google/uuid"
-	"math"
-	"regexp"
-	"strings"
 )
 
 const pageSize = 10
 
 var (
 	spacesRegExp = regexp.MustCompile(`\s+`)
+
+	errOverwriteCustomer = errors.New("can't overwrite customer details")
 )
 
 func SearchCustomers(req request.SearchCustomersNormalized) ([]db.Customer, uint32, error) {
@@ -46,16 +49,12 @@ func CreateCustomer(req request.CreateCustomer) error {
 		return err
 	}
 
-	if err := dao.CreateCustomer(customer); err != nil {
-		return err
-	}
-
-	return nil
+	return dao.CreateCustomer(customer)
 }
 
 func UpdateCustomer(req request.EditCustomer, customer db.Customer) error {
 	if customer.UpdatedAt.After(req.LoadedAt) {
-		return fmt.Errorf("can't overwrite customer details")
+		return errOverwriteCustomer
 	}
 
 	customer.FirstName = req.FirstName

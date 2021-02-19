@@ -1,9 +1,10 @@
 package dao
 
 import (
+	"strings"
+
 	"github.com/dmitriivoitovich/heameelega/dao/db"
 	"github.com/google/uuid"
-	"strings"
 )
 
 func CreateCustomer(customer *db.Customer) error {
@@ -62,7 +63,7 @@ func Customers(page, pageSize uint32, order, direction string, filters ...string
 
 	offset := (page - 1) * pageSize
 
-	q := db.DB.Debug().
+	q := db.DB.
 		Offset(int(offset)).
 		Limit(int(pageSize))
 
@@ -85,7 +86,8 @@ func Customers(page, pageSize uint32, order, direction string, filters ...string
 
 func CustomersCount(filters ...string) (uint32, error) {
 	var count int64
-	q := db.DB.Model(db.Customer{}).Debug()
+
+	q := db.DB.Model(db.Customer{})
 
 	for i := range filters {
 		filter := "%" + filters[i] + "%"

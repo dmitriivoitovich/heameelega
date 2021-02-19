@@ -1,10 +1,11 @@
 package request
 
 import (
-	"github.com/asaskevich/govalidator"
 	"regexp"
 	"strconv"
 	"time"
+
+	"github.com/asaskevich/govalidator"
 )
 
 const (
@@ -39,7 +40,7 @@ func init() {
 
 		return value >= min && value <= max
 	}
-	govalidator.ParamTagRegexMap["inrange"] = regexp.MustCompile("^inrange\\((\\d+)\\|(\\d+)\\)$")
+	govalidator.ParamTagRegexMap["inrange"] = regexp.MustCompile(`^inrange\((\d+)\|(\d+)\)$`)
 
 	govalidator.ParamTagMap["age"] = func(str string, params ...string) bool {
 		date, err := time.Parse(dateFormat, str)
@@ -62,7 +63,7 @@ func init() {
 
 		return date.After(min) && date.Before(max)
 	}
-	govalidator.ParamTagRegexMap["age"] = regexp.MustCompile("^age\\((\\d+)\\|(\\d+)\\)$")
+	govalidator.ParamTagRegexMap["age"] = regexp.MustCompile(`^age\((\d+)\|(\d+)\)$`)
 }
 
 func validateStruct(s interface{}) []string {

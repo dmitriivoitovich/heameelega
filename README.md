@@ -14,4 +14,4 @@
 ### Run static code analyser
 
     brew install golangci-lint
-    
+    golangci-lint run -E asciicheck,bodyclose,cyclop,depguard,dogsled,dupl,durationcheck,errorlint,exhaustive,exportloopref,forbidigo,funlen,gocognit,gocritic,gocyclo,godot,godox,goerr113,gofmt,goheader,goimports,golint,gomnd,gomodguard,goprintffuncname,gosec,ifshort,interfacer,makezero,maligned,misspell,nakedret,nestif,nlreturn,noctx,nolintlint,paralleltest,prealloc,predeclared,revive,rowserrcheck,scopelint,sqlclosecheck,stylecheck,testpackage,thelper,tparallel,unconvert,unparam,whitespace,wsl

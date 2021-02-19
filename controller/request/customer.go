@@ -1,9 +1,10 @@
 package request
 
 import (
-	"github.com/google/uuid"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const (

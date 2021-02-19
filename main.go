@@ -2,20 +2,21 @@ package main
 
 import (
 	"context"
+	"errors"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
+
 	"github.com/dmitriivoitovich/heameelega/config"
 	"github.com/dmitriivoitovich/heameelega/controller"
 	"github.com/dmitriivoitovich/heameelega/dao/db"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
-	"os"
-	"os/signal"
-	"time"
 )
 
 const (
-	httpPort  = "80"
-	httpsPort = "443"
+	httpPort = "80"
 
 	httpServerShutdownTimeout = time.Second * 30
 
@@ -90,16 +91,18 @@ func startWebServer(e *echo.Echo) {
 
 func httpErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
-	if he, ok := err.(*echo.HTTPError); ok {
-		code = he.Code
+
+	var httpError *echo.HTTPError
+	if errors.As(err, &httpError) {
+		code = httpError.Code
 	}
 
-	t := controller.Error500Tmpl
+	tmpl := controller.Error500Tmpl
 	if code == http.StatusNotFound {
-		t = controller.Error400Tmpl
+		tmpl = controller.Error400Tmpl
 	}
 
-	if err := t.Execute(c.Response(), nil); err != nil {
+	if err := tmpl.Execute(c.Response(), nil); err != nil {
 		c.Logger().Error(err)
 	}
 
