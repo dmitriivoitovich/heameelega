@@ -2,16 +2,14 @@ package controller
 
 import (
 	"errors"
-	"fmt"
 	"html/template"
 	"net/http"
-	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/dmitriivoitovich/heameelega/controller/request"
 	"github.com/dmitriivoitovich/heameelega/dao"
 	"github.com/dmitriivoitovich/heameelega/dao/db"
+	"github.com/dmitriivoitovich/heameelega/helper"
 	"github.com/dmitriivoitovich/heameelega/service"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -40,6 +38,14 @@ type editCustomerTmplData struct {
 
 var (
 	funcMap = template.FuncMap{
+		"linkHome":            helper.PageURLHome,
+		"linkLogout":          helper.PageURLLogout,
+		"linkDashboard":       helper.PageURLDashboard,
+		"linkCustomers":       helper.PageURLCustomers,
+		"linkSearchCustomers": helper.PageURLSearchCustomers,
+		"linkNewCustomer":     helper.PageURLNewCustomer,
+		"linkViewCustomer":    helper.PageURLViewCustomer,
+		"linkEditCustomer":    helper.PageURLEditCustomer,
 		"inSlice": func(slice []string, key string) bool {
 			for i := range slice {
 				if slice[i] == key {
@@ -63,27 +69,6 @@ var (
 		},
 		"dec": func(item uint32) uint32 {
 			return item - 1
-		},
-		"link": func(filter, order, direction string, reverseDirection bool, page uint32) string {
-			if reverseDirection {
-				if direction == "asc" {
-					direction = "desc"
-				} else {
-					direction = "asc"
-				}
-			}
-
-			params := url.Values{
-				"o": {order},
-				"d": {direction},
-				"p": {strconv.Itoa(int(page))},
-			}
-
-			if filter != "" {
-				params.Add("s", filter)
-			}
-
-			return fmt.Sprintf("/customers?%s", params.Encode())
 		},
 	}
 
@@ -133,6 +118,7 @@ var (
 	)
 	Error500Tmpl = template.Must(
 		template.New("500.gohtml").
+			Funcs(funcMap).
 			ParseFiles(
 				"template/error/500.gohtml",
 				"template/layout/header.gohtml",
@@ -141,6 +127,7 @@ var (
 	)
 	Error400Tmpl = template.Must(
 		template.New("404.gohtml").
+			Funcs(funcMap).
 			ParseFiles(
 				"template/error/404.gohtml",
 				"template/layout/header.gohtml",
@@ -176,7 +163,7 @@ func PostCreateCustomer(c echo.Context) error {
 			return createCustomerTmpl.Execute(c.Response(), tmplData)
 		}
 
-		return c.Redirect(http.StatusSeeOther, "/customers")
+		return c.Redirect(http.StatusSeeOther, helper.PageURLCustomers())
 	}
 
 	return createCustomerTmpl.Execute(c.Response(), tmplData)
@@ -292,5 +279,5 @@ func PostEditCustomer(c echo.Context) error {
 		return editCustomerTmpl.Execute(c.Response(), tmplData)
 	}
 
-	return c.Redirect(http.StatusSeeOther, "/customers/"+customer.ID.String())
+	return c.Redirect(http.StatusSeeOther, helper.PageURLViewCustomer(customer.ID))
 }

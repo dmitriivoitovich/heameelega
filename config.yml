@@ -1,5 +1,5 @@
 app:
-  host: localhost
+  host: http://localhost
 
 db:
   host: localhost

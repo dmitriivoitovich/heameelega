@@ -11,7 +11,7 @@
                 <h1 class="h2">{{ .FullName }}</h1>
 
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <a href="/customers/{{ .ID }}/edit" class="btn btn-sm btn-outline-secondary" role="button">
+                    <a href="{{ linkEditCustomer .ID }}" class="btn btn-sm btn-outline-secondary" role="button">
                         <span data-feather="edit"></span>
                         Edit
                     </a>

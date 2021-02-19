@@ -12,7 +12,7 @@
                 <h1 class="h2">Customers</h1>
 
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <a href="/customers/new" class="btn btn-sm btn-outline-secondary" role="button">
+                    <a href="{{ linkNewCustomer }}" class="btn btn-sm btn-outline-secondary" role="button">
                         <span data-feather="user-plus"></span>
                         Add
                     </a>
@@ -42,27 +42,27 @@
                         <thead>
                         <tr>
                             <th>
-                                <a href="{{ link $request.Filter "first_name" $request.Direction (eq $request.Order "first_name") $currentPage }}">
+                                <a href="{{ linkSearchCustomers $request.Filter "first_name" $request.Direction (eq $request.Order "first_name") $currentPage }}">
                                     Name
                                 </a>
                             </th>
                             <th>
-                                <a href="{{ link $request.Filter "email" $request.Direction (eq $request.Order "email") $currentPage }}">
+                                <a href="{{ linkSearchCustomers $request.Filter "email" $request.Direction (eq $request.Order "email") $currentPage }}">
                                     Email
                                 </a>
                             </th>
                             <th>
-                                <a href="{{ link $request.Filter "birth_date" $request.Direction (eq $request.Order "birth_date") $currentPage }}">
+                                <a href="{{ linkSearchCustomers $request.Filter "birth_date" $request.Direction (eq $request.Order "birth_date") $currentPage }}">
                                     Birth date
                                 </a>
                             </th>
                             <th>
-                                <a href="{{ link $request.Filter "gender" $request.Direction (eq $request.Order "gender") $currentPage }}">
+                                <a href="{{ linkSearchCustomers $request.Filter "gender" $request.Direction (eq $request.Order "gender") $currentPage }}">
                                     Gender
                                 </a>
                             </th>
                             <th>
-                                <a href="{{ link $request.Filter "address" $request.Direction (eq $request.Order "address") $currentPage }}">
+                                <a href="{{ linkSearchCustomers $request.Filter "address" $request.Direction (eq $request.Order "address") $currentPage }}">
                                     Address
                                 </a>
                             </th>
@@ -72,7 +72,7 @@
                         <tbody>
                         {{ with .Customers }}
                             {{ range . }}
-                                <tr onclick="window.location='/customers/{{ .ID }}'">
+                                <tr onclick="window.location='{{ linkViewCustomer .ID }}'">
                                     <td>{{ .FirstName }} {{ .LastName }}</td>
                                     <td>{{ .Email }}</td>
                                     <td>{{ .BirthDate.Format "02.01.2006" }}</td>
@@ -90,7 +90,7 @@
                         <ul class="pagination pagination-sm justify-content-center">
                             <li class="page-item {{ if eq $currentPage 1 }} disabled {{ end }}">
                                 <a class="page-link"
-                                   href="{{ link $request.Filter $request.Order $request.Direction false (dec $currentPage) }}"
+                                   href="{{ linkSearchCustomers $request.Filter $request.Order $request.Direction false (dec $currentPage) }}"
                                    aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
@@ -100,14 +100,14 @@
                                 {{ range . }}
                                     <li class="page-item {{ if eq (inc .) $currentPage }} active {{ end }}">
                                         <a class="page-link"
-                                           href="{{ link $request.Filter $request.Order $request.Direction false (inc .) }}"> {{ inc . }}</a>
+                                           href="{{ linkSearchCustomers $request.Filter $request.Order $request.Direction false (inc .) }}"> {{ inc . }}</a>
                                     </li>
                                 {{ end }}
                             {{ end }}
 
                             <li class="page-item {{ if eq $currentPage $pages }} disabled {{ end }}">
                                 <a class="page-link"
-                                   href="{{ link $request.Filter $request.Order $request.Direction false (inc $currentPage) }}"
+                                   href="{{ linkSearchCustomers $request.Filter $request.Order $request.Direction false (inc $currentPage) }}"
                                    aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
