@@ -21,7 +21,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: .infra/Dockerfile
+          file: system/docker/Dockerfile
           push: false
           tags: user/app:latest
 #      -
