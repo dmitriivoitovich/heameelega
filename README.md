@@ -1,5 +1,7 @@
 # Hea Meelega - CRM for happy You
 
+![](https://github.com/dmitriivoitovich/heameelega/workflows/build/badge.svg)
+
 ## Local development
 
 ### Run DB container
@@ -8,7 +10,7 @@
 
 ### Build and run app container
 
-    docker build -f .infra/Dockerfile -t heameelega:latest .
+    docker build -f .infra/docker/Dockerfile -t dmitriivoitovich/heameelega:latest .
     docker run --rm -it --link postgres:postgres -e VIPER_DB_HOST=postgres -p 80:80 heameelega
 
 ### Run static code analyser
