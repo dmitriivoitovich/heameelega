@@ -1,0 +1,23 @@
+{{ template "header" "Error 401" }}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center my-5">
+                <h1>Oops!</h1>
+                <h2>401 Unauthorized</h2>
+
+                <div>Sorry, an error has occurred. Your are not allowed to make this request!</div>
+
+                <div class="my-3">
+                    <a href="{{ linkHome }}" class="btn btn-sm btn-outline-secondary" role="button">
+                        <span data-feather="home"></span>
+                        Take me home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ template "footer" }}

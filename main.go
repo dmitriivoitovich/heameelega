@@ -47,21 +47,25 @@ func main() {
 
 	// middlewares
 	e.Use(middleware.Logger())
+	e.Use(controller.GenerateAppContext)
 
-	// routes
+	// routes without authorisation
 	e.Static("/public", "public")
 	e.GET("/", controller.GetHome)
 	e.GET("/login", controller.GetLogin)
 	e.POST("/login", controller.PostLogin)
+	// e.POST("/logout", controller.PostLogout)
 	e.GET("/register", controller.GetRegister)
 	e.POST("/register", controller.PostRegister)
-	e.GET("/dashboard", controller.GetDashboard)
-	e.GET("/customers", controller.GetSearchCustomers)
-	e.GET("/customers/new", controller.GetCreateCustomer)
-	e.POST("/customers/new", controller.PostCreateCustomer)
-	e.GET("/customers/:id", controller.GetViewCustomer)
-	e.GET("/customers/:id/edit", controller.GetEditCustomer)
-	e.POST("/customers/:id/edit", controller.PostEditCustomer)
+
+	// routes require authorisation
+	e.GET("/dashboard", controller.GetDashboard, controller.CheckAuth)
+	e.GET("/customers", controller.GetSearchCustomers, controller.CheckAuth)
+	e.GET("/customers/new", controller.GetCreateCustomer, controller.CheckAuth)
+	e.POST("/customers/new", controller.PostCreateCustomer, controller.CheckAuth)
+	e.GET("/customers/:id", controller.GetViewCustomer, controller.CheckAuth)
+	e.GET("/customers/:id/edit", controller.GetEditCustomer, controller.CheckAuth)
+	e.POST("/customers/:id/edit", controller.PostEditCustomer, controller.CheckAuth)
 
 	// http server instance
 	go startWebServer(e)
@@ -107,6 +111,8 @@ func httpErrorHandler(err error, c echo.Context) {
 	switch code {
 	case http.StatusBadRequest, http.StatusMethodNotAllowed:
 		tmpl = controller.Error400Tmpl
+	case http.StatusUnauthorized:
+		tmpl = controller.Error401Tmpl
 	case http.StatusNotFound:
 		tmpl = controller.Error404Tmpl
 	default:

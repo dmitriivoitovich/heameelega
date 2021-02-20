@@ -4,6 +4,7 @@ import (
 	"errors"
 	"html/template"
 	"net/http"
+	"time"
 
 	"github.com/dmitriivoitovich/heameelega/controller/request"
 	"github.com/dmitriivoitovich/heameelega/dao"
@@ -82,6 +83,19 @@ func PostLogin(c echo.Context) error {
 
 		return loginUserTmpl.Execute(c.Response(), tmplData)
 	}
+
+	accessToken := uuid.New()
+	if err := dao.UserUpdateAccessToken(user.ID, accessToken); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update access token")
+	}
+
+	cookie := &http.Cookie{
+		Name:    sessionCookieName,
+		Value:   accessToken.String(),
+		Expires: time.Now().AddDate(1, 0, 0),
+	}
+
+	c.SetCookie(cookie)
 
 	return c.Redirect(http.StatusSeeOther, helper.PageURLDashboard())
 }

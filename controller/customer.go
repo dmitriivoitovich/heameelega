@@ -40,6 +40,7 @@ type editCustomerTmplData struct {
 var (
 	funcMap = template.FuncMap{
 		"linkHome":            helper.PageURLHome,
+		"linkLogin":           helper.PageURLLogin,
 		"linkLogout":          helper.PageURLLogout,
 		"linkDashboard":       helper.PageURLDashboard,
 		"linkCustomers":       helper.PageURLCustomers,
@@ -122,6 +123,15 @@ var (
 			Funcs(funcMap).
 			ParseFiles(
 				"template/error/400.gohtml",
+				"template/layout/header.gohtml",
+				"template/layout/footer.gohtml",
+			),
+	)
+	Error401Tmpl = template.Must(
+		template.New("401.gohtml").
+			Funcs(funcMap).
+			ParseFiles(
+				"template/error/401.gohtml",
 				"template/layout/header.gohtml",
 				"template/layout/footer.gohtml",
 			),

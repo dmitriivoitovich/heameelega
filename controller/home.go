@@ -8,5 +8,9 @@ import (
 )
 
 func GetHome(c echo.Context) error {
-	return c.Redirect(http.StatusSeeOther, helper.PageURLDashboard())
+	if c.(AppContext).User != nil {
+		return c.Redirect(http.StatusSeeOther, helper.PageURLDashboard())
+	}
+
+	return c.Redirect(http.StatusSeeOther, helper.PageURLLogin())
 }

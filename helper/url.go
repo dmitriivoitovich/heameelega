@@ -12,6 +12,10 @@ func PageURLHome() string {
 	return config.AppHost() + "/"
 }
 
+func PageURLLogin() string {
+	return config.AppHost() + "/login"
+}
+
 func PageURLLogout() string {
 	return config.AppHost() + "/logout"
 }
