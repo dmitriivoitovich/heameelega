@@ -15,21 +15,7 @@ func Customer(id uuid.UUID) (*db.Customer, error) {
 	customer := &db.Customer{}
 
 	err := db.DB.
-		Where("ID = ?", id).
-		First(customer).
-		Error
-	if err != nil {
-		return nil, err
-	}
-
-	return customer, nil
-}
-
-func CustomerByEmail(email string) (*db.Customer, error) {
-	customer := &db.Customer{}
-
-	err := db.DB.
-		Where("EMAIL = ?", email).
+		Where("id = ?", id).
 		First(customer).
 		Error
 	if err != nil {
@@ -42,7 +28,7 @@ func CustomerByEmail(email string) (*db.Customer, error) {
 func UpdateCustomer(customer db.Customer) error {
 	return db.DB.
 		Model(&db.Customer{}).
-		Where("ID = ?", customer.ID).
+		Where("id = ?", customer.ID).
 		Updates(
 			map[string]interface{}{
 				"FirstName": customer.FirstName,

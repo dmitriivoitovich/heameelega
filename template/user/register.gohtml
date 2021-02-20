@@ -4,15 +4,25 @@
     <div class="row flex-column align-items-center justify-content-center h-100">
         <div class="col-9 col-md-6 col-xl-3">
             <form method="post" class="row g-1">
-                <div class="col-md-12 text-center">
+                <div class="col-md-12 pb-5 text-center">
                     <img src="{{ linkHome }}public/favicon/android-chrome-192x192.png" alt="Logo"/>
                 </div>
 
-                <div class="col-md-12 pt-5 text-center">
+                {{ if .Error }}
+                    <div class="col-md-12 pb-2">
+                        <div class="alert alert-danger py-1 mb-0" role="alert">
+                            {{ .Error }}
+                        </div>
+                    </div>
+                {{ end }}
+
+                <div class="col-md-12 text-center">
                     <input type="email"
                            name="email"
-                           class="form-control form-control-sm"
+                           class="form-control form-control-sm {{ if inSlice .InvalidFields "email" }} is-invalid {{ end }}"
                            placeholder="Email"
+                           value="{{ .Request.Email }}"
+                           maxlength="255"
                            required
                            autofocus/>
                 </div>
@@ -20,8 +30,11 @@
                 <div class="col-md-12 text-center">
                     <input type="password"
                            name="password"
-                           class="form-control form-control-sm"
+                           class="form-control form-control-sm {{ if inSlice .InvalidFields "password" }} is-invalid {{ end }}"
                            placeholder="Password"
+                           value="{{ .Request.Password }}"
+                           minlength="6"
+                           maxlength="32"
                            required/>
                 </div>
 

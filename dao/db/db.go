@@ -47,7 +47,7 @@ func connect(dsn string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := conn.AutoMigrate(&Customer{}); err != nil {
+	if err := conn.AutoMigrate(&Customer{}, &User{}); err != nil {
 		return nil, err
 	}
 
