@@ -117,20 +117,29 @@ var (
 				"template/layout/sidebar.gohtml",
 			),
 	)
+	Error400Tmpl = template.Must(
+		template.New("400.gohtml").
+			Funcs(funcMap).
+			ParseFiles(
+				"template/error/400.gohtml",
+				"template/layout/header.gohtml",
+				"template/layout/footer.gohtml",
+			),
+	)
+	Error404Tmpl = template.Must(
+		template.New("404.gohtml").
+			Funcs(funcMap).
+			ParseFiles(
+				"template/error/404.gohtml",
+				"template/layout/header.gohtml",
+				"template/layout/footer.gohtml",
+			),
+	)
 	Error500Tmpl = template.Must(
 		template.New("500.gohtml").
 			Funcs(funcMap).
 			ParseFiles(
 				"template/error/500.gohtml",
-				"template/layout/header.gohtml",
-				"template/layout/footer.gohtml",
-			),
-	)
-	Error400Tmpl = template.Must(
-		template.New("404.gohtml").
-			Funcs(funcMap).
-			ParseFiles(
-				"template/error/404.gohtml",
 				"template/layout/header.gohtml",
 				"template/layout/footer.gohtml",
 			),

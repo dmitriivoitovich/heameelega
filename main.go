@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"html/template"
 	"net/http"
 	"os"
 	"os/signal"
@@ -50,6 +51,10 @@ func main() {
 	// routes
 	e.Static("/public", "public")
 	e.GET("/", controller.GetHome)
+	e.GET("/login", controller.GetLogin)
+	// e.POST("/login", controller.PostLogin)
+	e.GET("/register", controller.GetRegister)
+	// e.POST("/register", controller.PostRegister)
 	e.GET("/dashboard", controller.GetDashboard)
 	e.GET("/customers", controller.GetSearchCustomers)
 	e.GET("/customers/new", controller.GetCreateCustomer)
@@ -90,16 +95,22 @@ func startWebServer(e *echo.Echo) {
 }
 
 func httpErrorHandler(err error, c echo.Context) {
-	code := http.StatusInternalServerError
+	var code int
 
 	var httpError *echo.HTTPError
 	if errors.As(err, &httpError) {
 		code = httpError.Code
 	}
 
-	tmpl := controller.Error500Tmpl
-	if code == http.StatusNotFound {
+	var tmpl *template.Template
+
+	switch code {
+	case http.StatusBadRequest, http.StatusMethodNotAllowed:
 		tmpl = controller.Error400Tmpl
+	case http.StatusNotFound:
+		tmpl = controller.Error404Tmpl
+	default:
+		tmpl = controller.Error500Tmpl
 	}
 
 	if err := tmpl.Execute(c.Response(), nil); err != nil {
