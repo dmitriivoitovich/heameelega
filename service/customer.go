@@ -20,7 +20,7 @@ var (
 	errOverwriteCustomer = errors.New("can't overwrite customer details")
 )
 
-func SearchCustomers(req request.SearchCustomersNormalized) ([]db.Customer, uint32, error) {
+func SearchCustomers(userID uuid.UUID, req request.SearchCustomersNormalized) ([]db.Customer, uint32, error) {
 	s := spacesRegExp.ReplaceAllString(req.Filter, " ")
 
 	filters := make([]string, 0)
@@ -28,12 +28,12 @@ func SearchCustomers(req request.SearchCustomersNormalized) ([]db.Customer, uint
 		filters = strings.Split(s, " ")
 	}
 
-	customers, err := dao.Customers(req.Page, pageSize, req.Order, req.Direction, filters...)
+	customers, err := dao.Customers(userID, req.Page, pageSize, req.Order, req.Direction, filters...)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	total, err := dao.CustomersCount(filters...)
+	total, err := dao.CustomersCount(userID, filters...)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -43,8 +43,8 @@ func SearchCustomers(req request.SearchCustomersNormalized) ([]db.Customer, uint
 	return customers, pages, nil
 }
 
-func CreateCustomer(req request.CreateCustomer) error {
-	customer, err := convertReqToDB(req)
+func CreateCustomer(userID uuid.UUID, req request.CreateCustomer) error {
+	customer, err := convertReqToDB(userID, req)
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func UpdateCustomer(req request.EditCustomer, customer db.Customer) error {
 	return dao.UpdateCustomer(customer)
 }
 
-func convertReqToDB(req request.CreateCustomer) (*db.Customer, error) {
+func convertReqToDB(userID uuid.UUID, req request.CreateCustomer) (*db.Customer, error) {
 	gender := db.GenderFemale
 	if req.Gender == request.GenderMale {
 		gender = db.GenderMale
@@ -89,6 +89,7 @@ func convertReqToDB(req request.CreateCustomer) (*db.Customer, error) {
 		LastName:  strings.TrimSpace(req.LastName),
 		Gender:    gender,
 		Email:     strings.ToLower(req.Email),
+		UserID:    userID,
 	}
 
 	date, err := req.BirthDateTime()

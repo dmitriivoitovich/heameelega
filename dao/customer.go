@@ -11,11 +11,11 @@ func CreateCustomer(customer *db.Customer) error {
 	return db.DB.Create(customer).Error
 }
 
-func Customer(id uuid.UUID) (*db.Customer, error) {
+func CustomerByIDAndUserID(id, userID uuid.UUID) (*db.Customer, error) {
 	customer := &db.Customer{}
 
 	err := db.DB.
-		Where("id = ?", id).
+		Where("id = ? AND user_id = ?", id, userID).
 		First(customer).
 		Error
 	if err != nil {
@@ -42,7 +42,7 @@ func UpdateCustomer(customer db.Customer) error {
 		Error
 }
 
-func Customers(page, pageSize uint32, order, direction string, filters ...string) ([]db.Customer, error) {
+func Customers(userID uuid.UUID, page, pageSize uint32, order, direction string, filters ...string) ([]db.Customer, error) {
 	customers := make([]db.Customer, 0)
 
 	offset := (page - 1) * pageSize
@@ -57,7 +57,7 @@ func Customers(page, pageSize uint32, order, direction string, filters ...string
 	}
 
 	err := q.
-		Where("deleted_at IS NULL").
+		Where("user_id = ? AND deleted_at IS NULL", userID).
 		Order(order + " " + strings.ToUpper(direction)).
 		Find(&customers).
 		Error
@@ -68,7 +68,7 @@ func Customers(page, pageSize uint32, order, direction string, filters ...string
 	return customers, nil
 }
 
-func CustomersCount(filters ...string) (uint32, error) {
+func CustomersCount(userID uuid.UUID, filters ...string) (uint32, error) {
 	var count int64
 
 	q := db.DB.Model(db.Customer{})
@@ -79,7 +79,7 @@ func CustomersCount(filters ...string) (uint32, error) {
 	}
 
 	err := q.
-		Where("deleted_at IS NULL").
+		Where("user_id = ? AND deleted_at IS NULL", userID).
 		Count(&count).
 		Error
 	if err != nil {

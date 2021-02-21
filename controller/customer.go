@@ -161,6 +161,8 @@ func GetCreateCustomer(c echo.Context) error {
 }
 
 func PostCreateCustomer(c echo.Context) error {
+	ctx := c.(AppContext)
+
 	tmplData := &createCustomerTmplData{}
 
 	if err := c.Bind(&tmplData.Request); err != nil {
@@ -173,7 +175,7 @@ func PostCreateCustomer(c echo.Context) error {
 		return createCustomerTmpl.Execute(c.Response(), tmplData)
 	}
 
-	if err := service.CreateCustomer(tmplData.Request); err != nil {
+	if err := service.CreateCustomer(ctx.User.ID, tmplData.Request); err != nil {
 		var pgError *pgconn.PgError
 		if errors.As(err, &pgError) && pgError.Code == "23505" {
 			tmplData.InvalidFields = append(tmplData.InvalidFields, "email")
@@ -189,6 +191,8 @@ func PostCreateCustomer(c echo.Context) error {
 }
 
 func GetSearchCustomers(c echo.Context) error {
+	ctx := c.(AppContext)
+
 	tmplData := &searchCustomerTmplData{}
 
 	if err := c.Bind(&tmplData.Request); err != nil {
@@ -202,7 +206,7 @@ func GetSearchCustomers(c echo.Context) error {
 		tmplData.Error = "Something is wrong with your request"
 	}
 
-	customers, pages, err := service.SearchCustomers(tmplData.Request.Normalized())
+	customers, pages, err := service.SearchCustomers(ctx.User.ID, tmplData.Request.Normalized())
 	if err != nil {
 		c.Logger().Error(err)
 
@@ -218,12 +222,14 @@ func GetSearchCustomers(c echo.Context) error {
 }
 
 func GetViewCustomer(c echo.Context) error {
+	ctx := c.(AppContext)
+
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "failed to parse customer id from request")
 	}
 
-	customer, err := dao.Customer(id)
+	customer, err := dao.CustomerByIDAndUserID(id, ctx.User.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, "failed to find a customer by id")
@@ -236,12 +242,14 @@ func GetViewCustomer(c echo.Context) error {
 }
 
 func GetEditCustomer(c echo.Context) error {
+	ctx := c.(AppContext)
+
 	tmplData := &editCustomerTmplData{}
 	if err := c.Bind(&tmplData.Request); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "failed to bind request")
 	}
 
-	customer, err := dao.Customer(tmplData.Request.ID)
+	customer, err := dao.CustomerByIDAndUserID(tmplData.Request.ID, ctx.User.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, "failed to find customer by id")
@@ -270,6 +278,8 @@ func GetEditCustomer(c echo.Context) error {
 }
 
 func PostEditCustomer(c echo.Context) error {
+	ctx := c.(AppContext)
+
 	tmplData := &editCustomerTmplData{}
 	if err := c.Bind(&tmplData.Request); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "failed to bind request")
@@ -280,7 +290,7 @@ func PostEditCustomer(c echo.Context) error {
 		return editCustomerTmpl.Execute(c.Response(), tmplData)
 	}
 
-	customer, err := dao.Customer(tmplData.Request.ID)
+	customer, err := dao.CustomerByIDAndUserID(tmplData.Request.ID, ctx.User.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, "failed to find customer by id")
