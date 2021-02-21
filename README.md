@@ -11,7 +11,7 @@
 ### Build and run app container
 
     docker build -f .infra/docker/Dockerfile -t dmitriivoitovich/heameelega:latest .
-    docker run --rm -it --link postgres:postgres -e VIPER_DB_HOST=postgres -p 80:80 heameelega
+    docker run --rm -it --link postgres:postgres -e VIPER_DB_HOST=postgres -p 80:80 dmitriivoitovich/heameelega:latest
 
 ### Run static code analyser
 
