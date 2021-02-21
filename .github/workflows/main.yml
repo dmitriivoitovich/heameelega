@@ -1,11 +1,20 @@
-name: build
+name: main
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  docker:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.37
+
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -23,3 +32,15 @@ jobs:
           file: .infra/docker/Dockerfile
           push: true
           tags: dmitriivoitovich/heameelega:latest
+
+  deploy:
+    needs: [linter, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to production
+        uses: appleboy/ssh-action@master
+        with:
+          host: heameele.ga
+          username: root
+          key: ${{ secrets.SSH_KEY }}
+          script: 'docker pull dmitriivoitovich/heameelega:latest && docker ps'

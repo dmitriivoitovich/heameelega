@@ -1,6 +1,6 @@
 # Hea Meelega - CRM for happy You
 
-![](https://github.com/dmitriivoitovich/heameelega/workflows/build/badge.svg)
+![](https://github.com/dmitriivoitovich/heameelega/workflows/main/badge.svg)
 
 ## Local development
 
