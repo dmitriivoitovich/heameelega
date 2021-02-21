@@ -14,4 +14,5 @@ type User struct {
 	CreatedAt   time.Time  `gorm:"column:created_at;type:timestamp without time zone;not null"`
 	UpdatedAt   time.Time  `gorm:"column:updated_at;type:timestamp without time zone;not null"`
 	DeletedAt   *time.Time `gorm:"column:deleted_at;type:timestamp without time zone;default:null;index"`
+	Customers   []Customer `gorm:"ForeignKey:UserID"`
 }

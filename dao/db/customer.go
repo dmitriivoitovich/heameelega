@@ -20,6 +20,7 @@ type Customer struct {
 	Gender    bool       `gorm:"column:gender;type:boolean;not null"`
 	Email     string     `gorm:"column:email;type:varchar(255);not null;uniqueIndex"`
 	Address   *string    `gorm:"column:address;type:varchar(200);default:null"`
+	UserID    uuid.UUID  `gorm:"column:user_id;type:uuid;not null"`
 	CreatedAt time.Time  `gorm:"column:created_at;type:timestamp without time zone;not null"`
 	UpdatedAt time.Time  `gorm:"column:updated_at;type:timestamp without time zone;not null"`
 	DeletedAt *time.Time `gorm:"column:deleted_at;type:timestamp without time zone;default:null;index"`
