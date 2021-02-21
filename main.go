@@ -54,11 +54,11 @@ func main() {
 	e.GET("/", controller.GetHome)
 	e.GET("/login", controller.GetLogin)
 	e.POST("/login", controller.PostLogin)
-	// e.POST("/logout", controller.PostLogout)
 	e.GET("/register", controller.GetRegister)
 	e.POST("/register", controller.PostRegister)
 
 	// routes require authorisation
+	e.POST("/logout", controller.PostLogout, controller.CheckAuth)
 	e.GET("/dashboard", controller.GetDashboard, controller.CheckAuth)
 	e.GET("/customers", controller.GetSearchCustomers, controller.CheckAuth)
 	e.GET("/customers/new", controller.GetCreateCustomer, controller.CheckAuth)

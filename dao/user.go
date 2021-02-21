@@ -45,7 +45,7 @@ func UserUpdateAccessToken(userID, token uuid.UUID) error {
 		Error
 }
 
-func UserRemoveAccessToken(userID, token uuid.UUID) error {
+func UserRemoveAccessToken(userID uuid.UUID) error {
 	return db.DB.
 		Model(&db.User{}).
 		Where("id = ?", userID).

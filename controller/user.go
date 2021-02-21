@@ -50,6 +50,16 @@ var (
 	)
 )
 
+func PostLogout(c echo.Context) error {
+	ctx := c.(AppContext)
+
+	if err := dao.UserRemoveAccessToken(ctx.User.ID); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to load user")
+	}
+
+	return c.Redirect(http.StatusSeeOther, helper.PageURLLogin())
+}
+
 func GetLogin(c echo.Context) error {
 	return loginUserTmpl.Execute(c.Response(), nil)
 }

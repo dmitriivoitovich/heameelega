@@ -22,10 +22,10 @@
                    value="{{ . }}"/>
         </form>
 
-        <ul class="navbar-nav px-3">
-            <li class="nav-item text-nowrap">
-                <a class="nav-link" href="{{ linkLogout }}">Sign out</a>
-            </li>
-        </ul>
+        <form action="{{ linkLogout }}" method="post" class="navbar-nav px-3">
+            <div class="nav-item text-nowrap">
+                <button type="submit" class="nav-link btn btn-link">Sign out</button>
+            </div>
+        </form>
     </header>
 {{ end }}
