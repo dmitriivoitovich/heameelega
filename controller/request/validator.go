@@ -12,7 +12,7 @@ const (
 	GenderMale   = "male"
 	GenderFemale = "female"
 
-	dateFormat = "2006-01-02"
+	DateFormat = "2006-01-02"
 )
 
 func init() {
@@ -43,7 +43,7 @@ func init() {
 	govalidator.ParamTagRegexMap["inrange"] = regexp.MustCompile(`^inrange\((\d+)\|(\d+)\)$`)
 
 	govalidator.ParamTagMap["age"] = func(str string, params ...string) bool {
-		date, err := time.Parse(dateFormat, str)
+		date, err := time.Parse(DateFormat, str)
 		if err != nil {
 			return false
 		}

@@ -1,26 +1,29 @@
 package controller
 
 import (
-	"errors"
-	"html/template"
-	"net/http"
-	"time"
-
 	"github.com/dmitriivoitovich/heameelega/controller/request"
-	"github.com/dmitriivoitovich/heameelega/dao"
 	"github.com/dmitriivoitovich/heameelega/dao/db"
 	"github.com/dmitriivoitovich/heameelega/helper"
 	"github.com/dmitriivoitovich/heameelega/service"
+	"github.com/dmitriivoitovich/heameelega/util/apperror"
 	"github.com/google/uuid"
-	"github.com/jackc/pgconn"
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
 type createCustomerTmplData struct {
 	Request       request.CreateCustomer
 	InvalidFields []string
-	Error         string
+	Error         *apperror.Error
+}
+
+type viewCustomerTmplData struct {
+	Customer db.Customer
+}
+
+type editCustomerTmplData struct {
+	Request       request.EditCustomer
+	InvalidFields []string
+	Error         *apperror.Error
 }
 
 type searchCustomerTmplData struct {
@@ -28,288 +31,139 @@ type searchCustomerTmplData struct {
 	InvalidFields []string
 	Customers     []db.Customer
 	Pages         uint32
-	Error         string
+	Error         *apperror.Error
 }
-
-type editCustomerTmplData struct {
-	Request       request.EditCustomer
-	InvalidFields []string
-	Error         string
-}
-
-var (
-	funcMap = template.FuncMap{
-		"linkHome":            helper.PageURLHome,
-		"linkLogin":           helper.PageURLLogin,
-		"linkLogout":          helper.PageURLLogout,
-		"linkDashboard":       helper.PageURLDashboard,
-		"linkCustomers":       helper.PageURLCustomers,
-		"linkSearchCustomers": helper.PageURLSearchCustomers,
-		"linkNewCustomer":     helper.PageURLNewCustomer,
-		"linkViewCustomer":    helper.PageURLViewCustomer,
-		"linkEditCustomer":    helper.PageURLEditCustomer,
-		"inSlice": func(slice []string, key string) bool {
-			for i := range slice {
-				if slice[i] == key {
-					return true
-				}
-			}
-
-			return false
-		},
-		"seq": func(items uint32) []uint32 {
-			res := make([]uint32, 0, items)
-
-			for i := uint32(0); i < items; i++ {
-				res = append(res, i)
-			}
-
-			return res
-		},
-		"inc": func(item uint32) uint32 {
-			return item + 1
-		},
-		"dec": func(item uint32) uint32 {
-			return item - 1
-		},
-	}
-
-	searchCustomerTmpl = template.Must(
-		template.New("search.gohtml").
-			Funcs(funcMap).
-			ParseFiles(
-				"template/customer/search.gohtml",
-				"template/layout/header.gohtml",
-				"template/layout/footer.gohtml",
-				"template/layout/navbar.gohtml",
-				"template/layout/sidebar.gohtml",
-			),
-	)
-	createCustomerTmpl = template.Must(
-		template.New("create.gohtml").
-			Funcs(funcMap).
-			ParseFiles(
-				"template/customer/create.gohtml",
-				"template/layout/header.gohtml",
-				"template/layout/footer.gohtml",
-				"template/layout/navbar.gohtml",
-				"template/layout/sidebar.gohtml",
-			),
-	)
-	viewCustomerTmpl = template.Must(
-		template.New("view.gohtml").
-			Funcs(funcMap).
-			ParseFiles(
-				"template/customer/view.gohtml",
-				"template/layout/header.gohtml",
-				"template/layout/footer.gohtml",
-				"template/layout/navbar.gohtml",
-				"template/layout/sidebar.gohtml",
-			),
-	)
-	editCustomerTmpl = template.Must(
-		template.New("edit.gohtml").
-			Funcs(funcMap).
-			ParseFiles(
-				"template/customer/edit.gohtml",
-				"template/layout/header.gohtml",
-				"template/layout/footer.gohtml",
-				"template/layout/navbar.gohtml",
-				"template/layout/sidebar.gohtml",
-			),
-	)
-	Error400Tmpl = template.Must(
-		template.New("400.gohtml").
-			Funcs(funcMap).
-			ParseFiles(
-				"template/error/400.gohtml",
-				"template/layout/header.gohtml",
-				"template/layout/footer.gohtml",
-			),
-	)
-	Error401Tmpl = template.Must(
-		template.New("401.gohtml").
-			Funcs(funcMap).
-			ParseFiles(
-				"template/error/401.gohtml",
-				"template/layout/header.gohtml",
-				"template/layout/footer.gohtml",
-			),
-	)
-	Error404Tmpl = template.Must(
-		template.New("404.gohtml").
-			Funcs(funcMap).
-			ParseFiles(
-				"template/error/404.gohtml",
-				"template/layout/header.gohtml",
-				"template/layout/footer.gohtml",
-			),
-	)
-	Error500Tmpl = template.Must(
-		template.New("500.gohtml").
-			Funcs(funcMap).
-			ParseFiles(
-				"template/error/500.gohtml",
-				"template/layout/header.gohtml",
-				"template/layout/footer.gohtml",
-			),
-	)
-)
 
 func GetCreateCustomer(c echo.Context) error {
-	return createCustomerTmpl.Execute(c.Response(), createCustomerTmplData{})
+	return RenderTmpl(c, tmplCreateCustomer, createCustomerTmplData{})
 }
 
 func PostCreateCustomer(c echo.Context) error {
 	ctx := c.(AppContext)
 
+	// bind request
 	tmplData := &createCustomerTmplData{}
-
 	if err := c.Bind(&tmplData.Request); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "failed to bind request")
+		return httpError(*apperror.BadRequest(err, "failed to bind create customer request"))
 	}
 
+	// validate request
 	tmplData.InvalidFields = tmplData.Request.Validate()
-
 	if len(tmplData.InvalidFields) > 0 {
-		return createCustomerTmpl.Execute(c.Response(), tmplData)
+		return RenderTmpl(c, tmplCreateCustomer, tmplData)
 	}
 
-	if err := service.CreateCustomer(ctx.User.ID, tmplData.Request); err != nil {
-		var pgError *pgconn.PgError
-		if errors.As(err, &pgError) && pgError.Code == "23505" {
-			tmplData.InvalidFields = append(tmplData.InvalidFields, "email")
-			tmplData.Error = "Email taken"
+	// create customer
+	customer, appErr := service.CreateCustomer(ctx.User.ID, tmplData.Request.Sanitized())
+	if appErr != nil {
+		if appErr.IsValidation() {
+			tmplData.Error = appErr
 
-			return createCustomerTmpl.Execute(c.Response(), tmplData)
+			return RenderTmpl(c, tmplCreateCustomer, tmplData)
 		}
 
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create customer")
+		return httpError(*appErr)
 	}
 
-	return c.Redirect(http.StatusSeeOther, helper.PageURLCustomers())
+	// redirect user to view customer page
+	return redirect(c, helper.PageURLViewCustomer(customer.ID))
 }
 
 func GetSearchCustomers(c echo.Context) error {
 	ctx := c.(AppContext)
 
+	// bind request
 	tmplData := &searchCustomerTmplData{}
-
 	if err := c.Bind(&tmplData.Request); err != nil {
-		c.Logger().Error(err)
-
-		tmplData.Error = "Something is wrong with your request"
+		return httpError(*apperror.BadRequest(err, "failed to bind search customers request"))
 	}
 
-	invalidFields := tmplData.Request.Validate()
-	if len(invalidFields) > 0 {
-		tmplData.Error = "Something is wrong with your request"
+	// validate request
+	tmplData.InvalidFields = tmplData.Request.Validate()
+	if len(tmplData.InvalidFields) > 0 {
+		return RenderTmpl(c, tmplSearchCustomers, tmplData)
 	}
 
-	customers, pages, err := service.SearchCustomers(ctx.User.ID, tmplData.Request.Normalized())
-	if err != nil {
-		c.Logger().Error(err)
-
-		tmplData.Error = "Something went wrong"
-
-		return searchCustomerTmpl.Execute(c.Response(), tmplData)
+	// search customers
+	customers, pages, appErr := service.SearchCustomers(ctx.User.ID, tmplData.Request.Normalized())
+	if appErr != nil {
+		return httpError(*appErr)
 	}
 
 	tmplData.Customers = customers
 	tmplData.Pages = pages
 
-	return searchCustomerTmpl.Execute(c.Response(), tmplData)
+	// render template
+	return RenderTmpl(c, tmplSearchCustomers, tmplData)
 }
 
 func GetViewCustomer(c echo.Context) error {
 	ctx := c.(AppContext)
 
+	// parse customer id from request
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, "failed to parse customer id from request")
+		return httpError(*apperror.BadRequest(err, "failed to parse customer if from request"))
 	}
 
-	customer, err := dao.CustomerByIDAndUserID(id, ctx.User.ID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return echo.NewHTTPError(http.StatusNotFound, "failed to find a customer by id")
-		}
-
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to load customer")
+	// load customer
+	customer, appErr := service.ViewCustomer(ctx.User.ID, id)
+	if appErr != nil {
+		return httpError(*appErr)
 	}
 
-	return viewCustomerTmpl.Execute(c.Response(), customer)
+	// render template
+	return RenderTmpl(c, tmplViewCustomer, viewCustomerTmplData{Customer: *customer})
 }
 
 func GetEditCustomer(c echo.Context) error {
 	ctx := c.(AppContext)
 
+	// bind request
 	tmplData := &editCustomerTmplData{}
 	if err := c.Bind(&tmplData.Request); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "failed to bind request")
+		return httpError(*apperror.BadRequest(err, "failed to bind edit customer request"))
 	}
 
-	customer, err := dao.CustomerByIDAndUserID(tmplData.Request.ID, ctx.User.ID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return echo.NewHTTPError(http.StatusNotFound, "failed to find customer by id")
-		}
-
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to load customer")
+	// load customer
+	customer, appErr := service.ViewCustomer(ctx.User.ID, tmplData.Request.ID)
+	if appErr != nil {
+		return httpError(*appErr)
 	}
 
-	tmplData.Request.FirstName = customer.FirstName
-	tmplData.Request.LastName = customer.LastName
-	tmplData.Request.BirthDate = customer.BirthDate.Format("2006-01-02")
+	// convert customer to edit customer request
+	tmplData.Request = *service.ConvertCustomerToEditReq(*customer)
 
-	tmplData.Request.Gender = "male"
-	if !customer.Gender {
-		tmplData.Request.Gender = "female"
-	}
-
-	tmplData.Request.Email = customer.Email
-	if customer.Address != nil {
-		tmplData.Request.Address = *customer.Address
-	}
-
-	tmplData.Request.LoadedAt = time.Now()
-
-	return editCustomerTmpl.Execute(c.Response(), tmplData)
+	// render template
+	return RenderTmpl(c, tmplEditCustomer, tmplData)
 }
 
 func PostEditCustomer(c echo.Context) error {
 	ctx := c.(AppContext)
 
+	// bind request
 	tmplData := &editCustomerTmplData{}
 	if err := c.Bind(&tmplData.Request); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "failed to bind request")
+		return httpError(*apperror.BadRequest(err, "failed to bind edit customer request"))
 	}
 
+	// validate request
 	tmplData.InvalidFields = tmplData.Request.Validate()
 	if len(tmplData.InvalidFields) > 0 {
-		return editCustomerTmpl.Execute(c.Response(), tmplData)
+		return RenderTmpl(c, tmplEditCustomer, tmplData)
 	}
 
-	customer, err := dao.CustomerByIDAndUserID(tmplData.Request.ID, ctx.User.ID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return echo.NewHTTPError(http.StatusNotFound, "failed to find customer by id")
+	// update customer
+	if appErr := service.UpdateCustomer(ctx.User.ID, tmplData.Request.Sanitized()); appErr != nil {
+		if appErr.IsValidation() {
+			tmplData.Error = appErr
+
+			return RenderTmpl(c, tmplEditCustomer, tmplData)
 		}
 
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to load customer")
+		return httpError(*appErr)
 	}
 
-	if err := service.UpdateCustomer(tmplData.Request, *customer); err != nil {
-		var pgError *pgconn.PgError
-		if errors.As(err, &pgError) && pgError.Code == "23505" {
-			tmplData.InvalidFields = append(tmplData.InvalidFields, "email")
-			tmplData.Error = "Email taken"
-
-			return editCustomerTmpl.Execute(c.Response(), tmplData)
-		}
-
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update customer")
-	}
-
-	return c.Redirect(http.StatusSeeOther, helper.PageURLViewCustomer(customer.ID))
+	// redirect user to view customer page
+	return redirect(c, helper.PageURLViewCustomer(tmplData.Request.ID))
 }

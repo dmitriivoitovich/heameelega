@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	DefaultSearchOrderField = "first_name"
-	DefaultSearchDirection  = "asc"
+	defaultSearchOrderField = "first_name"
+	defaultSearchDirection  = "asc"
 )
 
 type SearchCustomers struct {
@@ -47,7 +47,7 @@ type EditCustomer struct {
 }
 
 func (c *CreateCustomer) BirthDateTime() (*time.Time, error) {
-	date, err := time.Parse(dateFormat, c.BirthDate)
+	date, err := time.Parse(DateFormat, c.BirthDate)
 	if err != nil {
 		return nil, err
 	}
@@ -59,12 +59,36 @@ func (c *CreateCustomer) Validate() []string {
 	return validateStruct(*c)
 }
 
+func (c *CreateCustomer) Sanitized() CreateCustomer {
+	return CreateCustomer{
+		FirstName: strings.TrimSpace(c.FirstName),
+		LastName:  strings.TrimSpace(c.LastName),
+		BirthDate: strings.TrimSpace(c.BirthDate),
+		Gender:    strings.TrimSpace(c.Gender),
+		Email:     strings.ToLower(strings.TrimSpace(c.Email)),
+		Address:   strings.TrimSpace(c.Address),
+	}
+}
+
 func (c *EditCustomer) Validate() []string {
 	return validateStruct(*c)
 }
 
 func (c *EditCustomer) BirthDateTime() (time.Time, error) {
-	return time.Parse(dateFormat, c.BirthDate)
+	return time.Parse(DateFormat, c.BirthDate)
+}
+
+func (c *EditCustomer) Sanitized() EditCustomer {
+	return EditCustomer{
+		ID:        c.ID,
+		FirstName: strings.TrimSpace(c.FirstName),
+		LastName:  strings.TrimSpace(c.LastName),
+		BirthDate: strings.TrimSpace(c.BirthDate),
+		Gender:    strings.TrimSpace(c.Gender),
+		Email:     strings.ToLower(strings.TrimSpace(c.Email)),
+		Address:   strings.TrimSpace(c.Address),
+		LoadedAt:  c.LoadedAt,
+	}
 }
 
 func (c *SearchCustomers) Validate() []string {
@@ -90,12 +114,12 @@ func (c *SearchCustomers) Normalized() SearchCustomersNormalized {
 		filter = strings.TrimSpace(*c.Filter)
 	}
 
-	order := DefaultSearchOrderField
+	order := defaultSearchOrderField
 	if c.Order != nil && !invalidFieldsMap["o"] {
 		order = strings.TrimSpace(*c.Order)
 	}
 
-	direction := DefaultSearchDirection
+	direction := defaultSearchDirection
 	if c.Direction != nil && !invalidFieldsMap["d"] {
 		direction = strings.TrimSpace(*c.Direction)
 	}

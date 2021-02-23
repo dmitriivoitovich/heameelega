@@ -37,18 +37,20 @@ func UserByAccessToken(token uuid.UUID) (*db.User, error) {
 	return user, nil
 }
 
-func UserUpdateAccessToken(userID, token uuid.UUID) error {
+func UserUpdateAccessToken(user *db.User, token uuid.UUID) error {
+	user.AccessToken = &token
+
 	return db.DB.
-		Model(&db.User{}).
-		Where("id = ?", userID).
-		Update("access_token", token).
+		Model(user).
+		Update("access_token", user.AccessToken).
 		Error
 }
 
-func UserRemoveAccessToken(userID uuid.UUID) error {
+func UserRemoveAccessToken(user *db.User) error {
+	user.AccessToken = nil
+
 	return db.DB.
-		Model(&db.User{}).
-		Where("id = ?", userID).
-		Update("access_token", nil).
+		Model(user).
+		Update("access_token", user.AccessToken).
 		Error
 }

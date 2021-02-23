@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"html/template"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -99,29 +99,27 @@ func startWebServer(e *echo.Echo) {
 }
 
 func httpErrorHandler(err error, c echo.Context) {
-	var code int
-
-	var httpError *echo.HTTPError
-	if errors.As(err, &httpError) {
-		code = httpError.Code
+	var httpErr *echo.HTTPError
+	if !errors.As(err, &httpErr) {
+		httpErr = echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("unexpected error type: %v", err))
 	}
 
-	var tmpl *template.Template
+	var tmplName string
 
-	switch code {
+	switch httpErr.Code {
 	case http.StatusBadRequest, http.StatusMethodNotAllowed:
-		tmpl = controller.Error400Tmpl
+		tmplName = controller.TmplError400
 	case http.StatusUnauthorized:
-		tmpl = controller.Error401Tmpl
+		tmplName = controller.TmplError401
 	case http.StatusNotFound:
-		tmpl = controller.Error404Tmpl
+		tmplName = controller.TmplError404
 	default:
-		tmpl = controller.Error500Tmpl
+		tmplName = controller.TmplError500
 	}
 
-	if err := tmpl.Execute(c.Response(), nil); err != nil {
+	c.Response().WriteHeader(httpErr.Code)
+
+	if err := controller.RenderTmpl(c, tmplName, nil); err != nil {
 		c.Logger().Error(err)
 	}
-
-	c.Logger().Error(err)
 }

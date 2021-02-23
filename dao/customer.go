@@ -25,10 +25,9 @@ func CustomerByIDAndUserID(id, userID uuid.UUID) (*db.Customer, error) {
 	return customer, nil
 }
 
-func UpdateCustomer(customer db.Customer) error {
+func UpdateCustomer(customer *db.Customer) error {
 	return db.DB.
-		Model(&db.Customer{}).
-		Where("id = ?", customer.ID).
+		Model(customer).
 		Updates(
 			map[string]interface{}{
 				"FirstName": customer.FirstName,

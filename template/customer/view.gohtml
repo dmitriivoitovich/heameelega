@@ -1,4 +1,4 @@
-{{ template "header" .FullName }}
+{{ template "header" (print .Customer.FirstName " " .Customer.LastName) }}
 
 {{ template "navbar" "" }}
 
@@ -8,10 +8,11 @@
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                <h1 class="h2">{{ .FullName }}</h1>
+                <h1 class="h2">{{ (print .Customer.FirstName " " .Customer.LastName) }}</h1>
 
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <a href="{{ linkEditCustomer .ID }}" class="btn btn-sm btn-outline-secondary" role="button">
+                    <a href="{{ linkEditCustomer .Customer.ID }}" class="btn btn-sm btn-outline-secondary"
+                       role="button">
                         <span data-feather="edit"></span>
                         Edit
                     </a>
@@ -20,21 +21,22 @@
 
             <form class="row g-3">
                 <div class="col-md-6">
-                    <input type="text" class="form-control form-control-sm" value="{{ .FirstName }}" disabled/>
+                    <input type="text" class="form-control form-control-sm" value="{{ .Customer.FirstName }}" disabled/>
                 </div>
 
                 <div class="col-md-6">
-                    <input type="text" class="form-control form-control-sm" value="{{ .LastName }}" disabled/>
+                    <input type="text" class="form-control form-control-sm" value="{{ .Customer.LastName }}" disabled/>
                 </div>
 
                 <div class="col-md-12">
-                    <input type="email" class="form-control form-control-sm" value="{{ .Email }}" disabled/>
+                    <input type="email" class="form-control form-control-sm" value="{{ .Customer.Email }}" disabled/>
                 </div>
 
                 <div class="col-md-6">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Birth date</span>
-                        <input type="date" class="form-control form-control-sm" value="{{ .BirthDate.Format "2006-01-02" }}" disabled/>
+                        <input type="date" class="form-control form-control-sm"
+                               value="{{ .Customer.BirthDate.Format "2006-01-02" }}" disabled/>
                     </div>
                 </div>
 
@@ -42,10 +44,10 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Gender</span>
                         <select class="form-select form-select-sm" disabled>
-                            <option value="male" {{ if .Gender }} selected {{ end }}>
+                            <option value="male" {{ if .Customer.Gender }} selected {{ end }}>
                                 Male
                             </option>
-                            <option value="female" {{ if not .Gender }} selected {{ end }}>
+                            <option value="female" {{ if not .Customer.Gender }} selected {{ end }}>
                                 Female
                             </option>
                         </select>
@@ -53,7 +55,8 @@
                 </div>
 
                 <div class="col-md-12">
-                    <input type="text" class="form-control form-control-sm" value="{{ if .Address }} {{ .Address }} {{ end }}" disabled/>
+                    <input type="text" class="form-control form-control-sm"
+                           value="{{ if .Customer.Address }} {{ .Customer.Address }} {{ end }}" disabled/>
                 </div>
             </form>
         </main>
