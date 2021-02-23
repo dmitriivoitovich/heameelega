@@ -1,5 +1,6 @@
 app:
-  host: http://localhost
+  host: localhost
+  tls: false
 
 db:
   host: localhost

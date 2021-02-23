@@ -9,23 +9,28 @@ import (
 )
 
 func PageURLHome() string {
-	return config.AppHost() + "/"
+	scheme := "http://"
+	if config.AppTLS() {
+		scheme = "https://"
+	}
+
+	return scheme + config.AppHost() + "/"
 }
 
 func PageURLLogin() string {
-	return config.AppHost() + "/login"
+	return PageURLHome() + "login"
 }
 
 func PageURLLogout() string {
-	return config.AppHost() + "/logout"
+	return PageURLHome() + "logout"
 }
 
 func PageURLDashboard() string {
-	return config.AppHost() + "/dashboard"
+	return PageURLHome() + "dashboard"
 }
 
 func PageURLCustomers() string {
-	return config.AppHost() + "/customers"
+	return PageURLHome() + "customers"
 }
 
 func PageURLSearchCustomers(filter, order, direction string, reverseDirection bool, page uint32) string {
@@ -47,17 +52,17 @@ func PageURLSearchCustomers(filter, order, direction string, reverseDirection bo
 		params.Add("s", filter)
 	}
 
-	return config.AppHost() + "/customers?" + params.Encode()
+	return PageURLHome() + "customers?" + params.Encode()
 }
 
 func PageURLNewCustomer() string {
-	return config.AppHost() + "/customers/new"
+	return PageURLHome() + "customers/new"
 }
 
 func PageURLViewCustomer(id uuid.UUID) string {
-	return config.AppHost() + "/customers/" + id.String()
+	return PageURLHome() + "customers/" + id.String()
 }
 
 func PageURLEditCustomer(id uuid.UUID) string {
-	return config.AppHost() + "/customers/" + id.String() + "/edit"
+	return PageURLHome() + "customers/" + id.String() + "/edit"
 }

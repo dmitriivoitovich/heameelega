@@ -24,6 +24,10 @@ func AppHost() string {
 	return getStr("app.host")
 }
 
+func AppTLS() bool {
+	return getBool("app.tls")
+}
+
 func DBConfig() DBConf {
 	return DBConf{
 		Host:     getStr("db.host"),
@@ -48,6 +52,10 @@ func Read() error {
 
 func getStr(key string) string {
 	return viper.GetString(key)
+}
+
+func getBool(key string) bool {
+	return viper.GetBool(key)
 }
 
 func getUInt32(key string) uint32 {
