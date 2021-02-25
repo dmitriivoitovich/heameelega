@@ -12,6 +12,7 @@ import (
 	"github.com/dmitriivoitovich/heameelega/helper"
 	"github.com/dmitriivoitovich/heameelega/service"
 	"github.com/dmitriivoitovich/heameelega/util/apperror"
+	"github.com/dmitriivoitovich/heameelega/util/i18n"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -33,10 +34,27 @@ const (
 	sessionCookieTTL  = time.Hour * 24 * 31 * 12
 )
 
+type tmplData struct {
+	User        db.User
+	NavbarData  NavbarData
+	SidebarData SidebarData
+}
+
+type NavbarData struct {
+	User   db.User
+	Search string
+}
+
+type SidebarData struct {
+	User       db.User
+	ActivePage string
+}
+
 var (
 	funcMap = template.FuncMap{
 		"linkHome":            helper.PageURLHome,
 		"linkLogin":           helper.PageURLLogin,
+		"linkRegister":        helper.PageURLRegister,
 		"linkLogout":          helper.PageURLLogout,
 		"linkDashboard":       helper.PageURLDashboard,
 		"linkCustomers":       helper.PageURLCustomers,
@@ -68,6 +86,7 @@ var (
 		"dec": func(item uint32) uint32 {
 			return item - 1
 		},
+		"i18n": i18n.Translate,
 	}
 
 	layout = []string{

@@ -1,10 +1,11 @@
-{{ template "header" (print .Customer.FirstName " " .Customer.LastName) }}
+{{ $userLang := .User.Language }}
 
-{{ template "navbar" "" }}
+{{ template "header" (print .Customer.FirstName " " .Customer.LastName) }}
+{{ template "navbar" .NavbarData }}
 
 <div class="container-fluid">
     <div class="row">
-        {{ template "sidebar" "customers" }}
+        {{ template "sidebar" .SidebarData }}
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
@@ -14,7 +15,7 @@
                     <a href="{{ linkEditCustomer .Customer.ID }}" class="btn btn-sm btn-outline-secondary"
                        role="button">
                         <span data-feather="edit"></span>
-                        Edit
+                        {{ i18n "button.edit-customer" $userLang }}
                     </a>
                 </div>
             </div>
@@ -34,7 +35,7 @@
 
                 <div class="col-md-6">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text">Birth date</span>
+                        <span class="input-group-text">{{ i18n "field.birth-date" $userLang }}</span>
                         <input type="date" class="form-control form-control-sm"
                                value="{{ .Customer.BirthDate.Format "2006-01-02" }}" disabled/>
                     </div>
@@ -42,21 +43,23 @@
 
                 <div class="col-md-6">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text">Gender</span>
+                        <span class="input-group-text">{{ i18n "field.gender" $userLang }}</span>
                         <select class="form-select form-select-sm" disabled>
                             <option value="male" {{ if .Customer.Gender }} selected {{ end }}>
-                                Male
+                                {{ i18n "field.gender-male" $userLang }}
                             </option>
                             <option value="female" {{ if not .Customer.Gender }} selected {{ end }}>
-                                Female
+                                {{ i18n "field.gender-female" $userLang }}
                             </option>
                         </select>
                     </div>
                 </div>
 
                 <div class="col-md-12">
-                    <input type="text" class="form-control form-control-sm"
-                           value="{{ if .Customer.Address }} {{ .Customer.Address }} {{ end }}" disabled/>
+                    <input type="text"
+                           class="form-control form-control-sm"
+                           value="{{ if .Customer.Address }} {{ .Customer.Address }} {{ end }}"
+                           disabled/>
                 </div>
             </form>
         </main>

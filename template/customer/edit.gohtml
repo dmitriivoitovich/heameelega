@@ -1,10 +1,11 @@
-{{ template "header" (print .Request.FirstName " " .Request.LastName) }}
+{{ $userLang := .User.Language }}
 
-{{ template "navbar" "" }}
+{{ template "header" (print .Request.FirstName " " .Request.LastName) }}
+{{ template "navbar" .NavbarData }}
 
 <div class="container-fluid">
     <div class="row">
-        {{ template "sidebar" "customers" }}
+        {{ template "sidebar" .SidebarData }}
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
@@ -15,7 +16,7 @@
                 {{ if .Error }}
                     <div class="col-md-12">
                         <div class="alert alert-danger py-1 mb-0" role="alert">
-                            {{ .Error.I18nKey }}
+                            {{ i18n .Error.I18nKey $userLang }}
                         </div>
                     </div>
                 {{ end }}
@@ -26,7 +27,7 @@
                             class="form-control form-control-sm {{ if inSlice .InvalidFields "firstName" }} is-invalid {{ end }}"
                             name="firstName"
                             value="{{ .Request.FirstName }}"
-                            placeholder="First name"
+                            placeholder="{{ i18n "field.first-name" $userLang }}"
                             maxlength="100"
                             required/>
                 </div>
@@ -37,7 +38,7 @@
                             class="form-control form-control-sm {{ if inSlice .InvalidFields "lastName" }} is-invalid {{ end }}"
                             name="lastName"
                             value="{{ .Request.LastName }}"
-                            placeholder="Last name"
+                            placeholder="{{ i18n "field.last-name" $userLang }}"
                             maxlength="100"
                             required/>
                 </div>
@@ -48,14 +49,14 @@
                             class="form-control form-control-sm {{ if inSlice .InvalidFields "email" }} is-invalid {{ end }}"
                             name="email"
                             value="{{ .Request.Email }}"
-                            placeholder="Email"
+                            placeholder="{{ i18n "field.email" $userLang }}"
                             maxlength="255"
                             required/>
                 </div>
 
                 <div class="col-md-6">
                     <div class="input-group input-group-sm has-validation">
-                        <span class="input-group-text">Birth date</span>
+                        <span class="input-group-text">{{ i18n "field.birth-date" $userLang }}</span>
                         <input
                                 type="date"
                                 class="form-control form-control-sm {{ if inSlice .InvalidFields "birthDate" }} is-invalid {{ end }}"
@@ -67,16 +68,16 @@
 
                 <div class="col-md-6">
                     <div class="input-group input-group-sm has-validation">
-                        <span class="input-group-text">Gender</span>
+                        <span class="input-group-text">{{ i18n "field.gender" $userLang }}</span>
                         <select
                                 class="form-select form-select-sm {{ if inSlice .InvalidFields "gender" }} is-invalid {{ end }}"
                                 name='gender'
                                 required>
                             <option value="male" {{ if eq .Request.Gender "male" }} selected {{ end }}>
-                                Male
+                                {{ i18n "field.gender-male" $userLang }}
                             </option>
                             <option value="female" {{ if eq .Request.Gender "female" }} selected {{ end }}>
-                                Female
+                                {{ i18n "field.gender-female" $userLang }}
                             </option>
                         </select>
                     </div>
@@ -88,17 +89,19 @@
                             class="form-control form-control-sm {{ if inSlice .InvalidFields "address" }} is-invalid {{ end }}"
                             name="address"
                             value="{{ .Request.Address }}"
-                            placeholder="Address"
+                            placeholder="{{ i18n "field.address" $userLang }}"
                             maxlength="200"/>
                 </div>
 
                 <input type="hidden" name="loadedAt" value="{{ .Request.LoadedAt.Format "2006-01-02T15:04:05Z07:00" }}"/>
 
                 <div class="col-md-12 pt-2">
-                    <button type="submit" class="btn btn-outline-secondary btn-sm">Save</button>
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        {{ i18n "button.save-customer" $userLang }}
+                    </button>
 
                     <a href="{{ linkViewCustomer .Request.ID }}" class="btn btn-sm btn-outline-secondary" role="button">
-                        Cancel
+                        {{ i18n "button.cancel" $userLang }}
                     </a>
                 </div>
             </form>

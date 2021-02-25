@@ -21,6 +21,10 @@ func PageURLLogin() string {
 	return PageURLHome() + "login"
 }
 
+func PageURLRegister() string {
+	return PageURLHome() + "register"
+}
+
 func PageURLLogout() string {
 	return PageURLHome() + "logout"
 }

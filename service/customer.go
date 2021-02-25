@@ -49,7 +49,7 @@ func CreateCustomer(userID uuid.UUID, req request.CreateCustomer) (*db.Customer,
 
 	if err := dao.CreateCustomer(customer); err != nil {
 		if dao.IsErrDuplicateKey(err) {
-			return nil, apperror.Validation(i18n.KeyEmailTaken)
+			return nil, apperror.Validation(i18n.KeyErrorEmailTaken)
 		}
 
 		return nil, apperror.Internal(err, "failed to create new customer")
@@ -78,7 +78,7 @@ func UpdateCustomer(userID uuid.UUID, req request.EditCustomer) *apperror.Error 
 	}
 
 	if customer.UpdatedAt.After(req.LoadedAt) {
-		return apperror.Validation(i18n.KeyDataCollision)
+		return apperror.Validation(i18n.KeyErrorDataCollision)
 	}
 
 	customer.FirstName = req.FirstName
@@ -100,7 +100,7 @@ func UpdateCustomer(userID uuid.UUID, req request.EditCustomer) *apperror.Error 
 
 	if err := dao.UpdateCustomer(customer); err != nil {
 		if dao.IsErrDuplicateKey(err) {
-			return apperror.Validation(i18n.KeyEmailTaken)
+			return apperror.Validation(i18n.KeyErrorEmailTaken)
 		}
 
 		return apperror.Internal(err, "failed to update customer")

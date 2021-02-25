@@ -1,20 +1,84 @@
-{{ template "header" "Dashboard" }}
+{{ $userLang := .User.Language }}
 
-{{ template "navbar" "" }}
+{{ template "header" (i18n "title.dashboard" $userLang) }}
+
+{{ template "navbar" .NavbarData }}
 
 <div class="container-fluid">
     <div class="row">
-        {{ template "sidebar" "dashboard" }}
+        {{ template "sidebar" .SidebarData }}
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                <h1 class="h2">Dashboard</h1>
+                <h1 class="h2">{{ i18n "title.dashboard" $userLang }}</h1>
             </div>
 
-            <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+            <canvas class="my-4 w-100" id="chart" width="900" height="380"></canvas>
         </main>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"
+        integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha"
+        crossorigin="anonymous"></script>
+
+<script defer>
+    var myChart = new Chart(
+        document.getElementById('chart'),
+        {
+            type: 'line',
+            data: {
+                labels: [
+                    '{{ i18n "column.march" $userLang}}',
+                    '{{ i18n "column.april" $userLang}}',
+                    '{{ i18n "column.may" $userLang}}',
+                    '{{ i18n "column.june" $userLang}}',
+                    '{{ i18n "column.july" $userLang}}',
+                    '{{ i18n "column.august" $userLang}}',
+                    '{{ i18n "column.september" $userLang}}',
+                    '{{ i18n "column.october" $userLang}}',
+                    '{{ i18n "column.november" $userLang}}',
+                    '{{ i18n "column.december" $userLang}}',
+                    '{{ i18n "column.january" $userLang}}',
+                    '{{ i18n "column.february" $userLang}}',
+                ],
+                datasets: [{
+                    data: [
+                        127,
+                        190,
+                        285,
+                        427,
+                        640,
+                        960,
+                        1440,
+                        2160,
+                        3240,
+                        4860,
+                        7290,
+                        10935,
+                    ],
+                    lineTension: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: '#007bff',
+                    borderWidth: 4,
+                    pointBackgroundColor: '#007bff'
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: false
+                        }
+                    }]
+                },
+                legend: {
+                    display: false
+                }
+            }
+        }
+    )
+</script>
 
 
 {{ template "footer" }}

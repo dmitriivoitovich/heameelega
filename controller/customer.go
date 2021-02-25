@@ -11,38 +11,70 @@ import (
 )
 
 type createCustomerTmplData struct {
+	tmplData
 	Request       request.CreateCustomer
 	InvalidFields []string
 	Error         *apperror.Error
 }
 
 type viewCustomerTmplData struct {
+	tmplData
 	Customer db.Customer
 }
 
 type editCustomerTmplData struct {
+	tmplData
 	Request       request.EditCustomer
 	InvalidFields []string
 	Error         *apperror.Error
 }
 
 type searchCustomerTmplData struct {
+	tmplData
 	Request       request.SearchCustomers
 	InvalidFields []string
 	Customers     []db.Customer
 	Pages         uint32
-	Error         *apperror.Error
 }
 
 func GetCreateCustomer(c echo.Context) error {
-	return RenderTmpl(c, tmplCreateCustomer, createCustomerTmplData{})
+	ctx := c.(AppContext)
+
+	tmplData := createCustomerTmplData{
+		tmplData: tmplData{
+			User: *ctx.User,
+			NavbarData: NavbarData{
+				User:   *ctx.User,
+				Search: "",
+			},
+			SidebarData: SidebarData{
+				User:       *ctx.User,
+				ActivePage: "customers",
+			},
+		},
+	}
+
+	return RenderTmpl(c, tmplCreateCustomer, tmplData)
 }
 
 func PostCreateCustomer(c echo.Context) error {
 	ctx := c.(AppContext)
 
 	// bind request
-	tmplData := &createCustomerTmplData{}
+	tmplData := createCustomerTmplData{
+		tmplData: tmplData{
+			User: *ctx.User,
+			NavbarData: NavbarData{
+				User:   *ctx.User,
+				Search: "",
+			},
+			SidebarData: SidebarData{
+				User:       *ctx.User,
+				ActivePage: "customers",
+			},
+		},
+	}
+
 	if err := c.Bind(&tmplData.Request); err != nil {
 		return httpError(*apperror.BadRequest(err, "failed to bind create customer request"))
 	}
@@ -73,10 +105,26 @@ func GetSearchCustomers(c echo.Context) error {
 	ctx := c.(AppContext)
 
 	// bind request
-	tmplData := &searchCustomerTmplData{}
+	tmplData := &searchCustomerTmplData{
+		tmplData: tmplData{
+			User: *ctx.User,
+			NavbarData: NavbarData{
+				User:   *ctx.User,
+				Search: "",
+			},
+			SidebarData: SidebarData{
+				User:       *ctx.User,
+				ActivePage: "customers",
+			},
+		},
+	}
+
 	if err := c.Bind(&tmplData.Request); err != nil {
 		return httpError(*apperror.BadRequest(err, "failed to bind search customers request"))
 	}
+
+	req := tmplData.Request.Normalized()
+	tmplData.NavbarData.Search = req.Filter
 
 	// validate request
 	tmplData.InvalidFields = tmplData.Request.Validate()
@@ -85,7 +133,7 @@ func GetSearchCustomers(c echo.Context) error {
 	}
 
 	// search customers
-	customers, pages, appErr := service.SearchCustomers(ctx.User.ID, tmplData.Request.Normalized())
+	customers, pages, appErr := service.SearchCustomers(ctx.User.ID, req)
 	if appErr != nil {
 		return httpError(*appErr)
 	}
@@ -113,14 +161,42 @@ func GetViewCustomer(c echo.Context) error {
 	}
 
 	// render template
-	return RenderTmpl(c, tmplViewCustomer, viewCustomerTmplData{Customer: *customer})
+	tmplData := viewCustomerTmplData{
+		tmplData: tmplData{
+			User: *ctx.User,
+			NavbarData: NavbarData{
+				User:   *ctx.User,
+				Search: "",
+			},
+			SidebarData: SidebarData{
+				User:       *ctx.User,
+				ActivePage: "customers",
+			},
+		},
+		Customer: *customer,
+	}
+
+	return RenderTmpl(c, tmplViewCustomer, tmplData)
 }
 
 func GetEditCustomer(c echo.Context) error {
 	ctx := c.(AppContext)
 
 	// bind request
-	tmplData := &editCustomerTmplData{}
+	tmplData := &editCustomerTmplData{
+		tmplData: tmplData{
+			User: *ctx.User,
+			NavbarData: NavbarData{
+				User:   *ctx.User,
+				Search: "",
+			},
+			SidebarData: SidebarData{
+				User:       *ctx.User,
+				ActivePage: "customers",
+			},
+		},
+	}
+
 	if err := c.Bind(&tmplData.Request); err != nil {
 		return httpError(*apperror.BadRequest(err, "failed to bind edit customer request"))
 	}
@@ -142,7 +218,20 @@ func PostEditCustomer(c echo.Context) error {
 	ctx := c.(AppContext)
 
 	// bind request
-	tmplData := &editCustomerTmplData{}
+	tmplData := &editCustomerTmplData{
+		tmplData: tmplData{
+			User: *ctx.User,
+			NavbarData: NavbarData{
+				User:   *ctx.User,
+				Search: "",
+			},
+			SidebarData: SidebarData{
+				User:       *ctx.User,
+				ActivePage: "customers",
+			},
+		},
+	}
+
 	if err := c.Bind(&tmplData.Request); err != nil {
 		return httpError(*apperror.BadRequest(err, "failed to bind edit customer request"))
 	}

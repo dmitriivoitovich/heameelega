@@ -1,36 +1,29 @@
+{{ $userLang := .User.Language }}
 {{ $request := .Request.Normalized }}
 
-{{ template "header" "Customers" }}
-{{ template "navbar" $request.Filter }}
+{{ template "header" i18n "title.customers" $userLang }}
+{{ template "navbar" .NavbarData }}
 
 <div class="container-fluid">
     <div class="row">
-        {{ template "sidebar" "customers" }}
+        {{ template "sidebar" .SidebarData }}
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                <h1 class="h2">Customers</h1>
+                <h1 class="h2">{{ i18n "title.customers" $userLang }}</h1>
 
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <a href="{{ linkNewCustomer }}" class="btn btn-sm btn-outline-secondary" role="button">
                         <span data-feather="user-plus"></span>
-                        Add
+                        {{ i18n "button.add-customer" $userLang }}
                     </a>
                 </div>
             </div>
 
-            {{ if .Error }}
-                <div class="col-md-12">
-                    <div class="alert alert-danger py-1" role="alert">
-                        {{ .Error }}
-                    </div>
-                </div>
-            {{ end }}
-
             {{ if not .Customers }}
                 <div class="col-md-12">
                     <div class="alert alert-secondary py-1" role="alert">
-                        None so far
+                        {{ i18n "message.no-search-results" $userLang }}
                     </div>
                 </div>
             {{ else }}
@@ -43,27 +36,27 @@
                         <tr>
                             <th>
                                 <a href="{{ linkSearchCustomers $request.Filter "first_name" $request.Direction (eq $request.Order "first_name") $currentPage }}">
-                                    Name
+                                    {{ i18n "column.name" $userLang }}
                                 </a>
                             </th>
                             <th>
                                 <a href="{{ linkSearchCustomers $request.Filter "email" $request.Direction (eq $request.Order "email") $currentPage }}">
-                                    Email
+                                    {{ i18n "column.email" $userLang }}
                                 </a>
                             </th>
                             <th>
                                 <a href="{{ linkSearchCustomers $request.Filter "birth_date" $request.Direction (eq $request.Order "birth_date") $currentPage }}">
-                                    Birth date
+                                    {{ i18n "column.birth-date" $userLang }}
                                 </a>
                             </th>
                             <th>
                                 <a href="{{ linkSearchCustomers $request.Filter "gender" $request.Direction (eq $request.Order "gender") $currentPage }}">
-                                    Gender
+                                    {{ i18n "column.gender" $userLang }}
                                 </a>
                             </th>
                             <th>
                                 <a href="{{ linkSearchCustomers $request.Filter "address" $request.Direction (eq $request.Order "address") $currentPage }}">
-                                    Address
+                                    {{ i18n "column.address" $userLang }}
                                 </a>
                             </th>
                         </tr>
@@ -76,7 +69,7 @@
                                     <td>{{ .FirstName }} {{ .LastName }}</td>
                                     <td>{{ .Email }}</td>
                                     <td>{{ .BirthDate.Format "02.01.2006" }}</td>
-                                    <td>{{ if .Gender }} Male {{ else }} Female {{ end }}</td>
+                                    <td>{{ if .Gender }} {{ i18n "field.gender-male" $userLang }} {{ else }} {{ i18n "field.gender-female" $userLang }} {{ end }}</td>
                                     <td>{{ if .Address }} {{ .Address }} {{ end }}</td>
                                 </tr>
                             {{ end }}

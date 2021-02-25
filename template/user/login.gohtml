@@ -1,4 +1,4 @@
-{{ template "header" "Sign in" }}
+{{ template "header" i18n "title.login" "EN" }}
 
 <div class="container h-100">
     <div class="row flex-column align-items-center justify-content-center h-100">
@@ -11,7 +11,7 @@
                 {{ if .Error }}
                     <div class="col-md-12 pb-2">
                         <div class="alert alert-danger py-1 mb-0" role="alert">
-                            {{ .Error.I18nKey }}
+                            {{ i18n .Error.I18nKey "EN" }}
                         </div>
                     </div>
                 {{ end }}
@@ -20,7 +20,7 @@
                     <input type="email"
                            name="email"
                            class="form-control form-control-sm {{ if inSlice .InvalidFields "email" }} is-invalid {{ end }}"
-                           placeholder="Email"
+                           placeholder="{{ i18n "field.email" "EN" }}"
                            value="{{ .Request.Email }}"
                            maxlength="255"
                            required
@@ -31,7 +31,7 @@
                     <input type="password"
                            name="password"
                            class="form-control form-control-sm {{ if inSlice .InvalidFields "password" }} is-invalid {{ end }}"
-                           placeholder="Password"
+                           placeholder="{{ i18n "field.password" "EN" }}"
                            value="{{ .Request.Password }}"
                            minlength="6"
                            maxlength="32"
@@ -41,12 +41,12 @@
                 <div class="col-md-12 pt-2 text-center">
                     <button type="submit" class="btn btn-outline-secondary btn-sm">
                         <span data-feather="log-in"></span>
-                        Sign in
+                        {{ i18n "button.login" "EN" }}
                     </button>
                 </div>
 
                 <div class="col-md-12 pt-2 text-left">
-                    <a href="{{ linkHome }}register">Don't have an account? Create one now.</a>
+                    <a href="{{ linkRegister }}">{{ i18n "link.register" "EN"}}</a>
                 </div>
             </form>
         </div>

@@ -1,4 +1,6 @@
 {{ define "navbar" }}
+    {{ $userLang := .User.Language }}
+
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
         <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="{{ linkHome }}">Hea Meelega</a>
 
@@ -16,15 +18,15 @@
             <input class="form-control form-control-dark"
                    type="text"
                    name="s"
-                   placeholder="Search"
+                   placeholder="{{ i18n "field.search" $userLang }}"
                    aria-label="Search"
                    maxlength="201"
-                   value="{{ . }}"/>
+                   value="{{ .Search }}"/>
         </form>
 
         <form action="{{ linkLogout }}" method="post" class="navbar-nav px-3">
             <div class="nav-item text-nowrap">
-                <button type="submit" class="nav-link btn btn-link">Sign out</button>
+                <button type="submit" class="nav-link btn btn-link">{{ i18n "button.logout" $userLang }}</button>
             </div>
         </form>
     </header>

@@ -40,14 +40,14 @@ func UserLogin(req request.LoginUser) (*db.User, *apperror.Error) {
 	user, err := dao.UserByEmail(req.Email)
 	if err != nil {
 		if dao.IsErrRecordNotFound(err) {
-			return nil, apperror.Validation(i18n.KeyCredentialsInvalid)
+			return nil, apperror.Validation(i18n.KeyErrorCredentialsInvalid)
 		}
 
 		return nil, apperror.Internal(err, "failed to load user by email")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		return nil, apperror.Validation(i18n.KeyCredentialsInvalid)
+		return nil, apperror.Validation(i18n.KeyErrorCredentialsInvalid)
 	}
 
 	if err := dao.UserUpdateAccessToken(user, uuid.New()); err != nil {
@@ -80,7 +80,7 @@ func UserRegister(req request.RegisterUser) (*db.User, *apperror.Error) {
 
 	if err := dao.CreateUser(user); err != nil {
 		if dao.IsErrDuplicateKey(err) {
-			return nil, apperror.Validation(i18n.KeyEmailTaken)
+			return nil, apperror.Validation(i18n.KeyErrorEmailTaken)
 		}
 
 		return nil, apperror.Internal(err, "failed to create new user")
