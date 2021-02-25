@@ -64,6 +64,7 @@ func main() {
 	e.GET("/dashboard", controller.GetDashboard, controller.CheckAuth)
 	e.GET("/customers", controller.GetSearchCustomers, controller.CheckAuth)
 	e.GET("/customers/new", controller.GetCreateCustomer, controller.CheckAuth)
+	e.GET("/customers/fake", controller.GetGenerateCustomers, controller.CheckAuth)
 	e.POST("/customers/new", controller.PostCreateCustomer, controller.CheckAuth)
 	e.GET("/customers/:id", controller.GetViewCustomer, controller.CheckAuth)
 	e.GET("/customers/:id/edit", controller.GetEditCustomer, controller.CheckAuth)

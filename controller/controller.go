@@ -85,6 +85,12 @@ var (
 		"inc": func(item uint32) uint32 {
 			return item + 1
 		},
+		"sub": func(a, b uint32) uint32 {
+			return a - b
+		},
+		"div": func(a, b uint32) uint32 {
+			return a / b
+		},
 		"dec": func(item uint32) uint32 {
 			return item - 1
 		},

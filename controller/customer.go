@@ -31,10 +31,15 @@ type editCustomerTmplData struct {
 
 type searchCustomerTmplData struct {
 	tmplData
-	Request       request.SearchCustomers
-	InvalidFields []string
-	Customers     []db.Customer
-	Pages         uint32
+	Request        request.SearchCustomers
+	InvalidFields  []string
+	Customers      []db.Customer
+	PaginationData PaginationData
+}
+
+type PaginationData struct {
+	TotalPages uint32
+	PagesLimit uint32
 }
 
 func GetCreateCustomer(c echo.Context) error {
@@ -117,6 +122,7 @@ func GetSearchCustomers(c echo.Context) error {
 				ActivePage: "customers",
 			},
 		},
+		PaginationData: PaginationData{},
 	}
 
 	if err := c.Bind(&tmplData.Request); err != nil {
@@ -139,7 +145,10 @@ func GetSearchCustomers(c echo.Context) error {
 	}
 
 	tmplData.Customers = customers
-	tmplData.Pages = pages
+	tmplData.PaginationData = PaginationData{
+		TotalPages: pages,
+		PagesLimit: service.PaginationPagesLimit,
+	}
 
 	// render template
 	return RenderTmpl(c, tmplSearchCustomers, tmplData)
@@ -151,7 +160,7 @@ func GetViewCustomer(c echo.Context) error {
 	// parse customer id from request
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		return httpError(*apperror.BadRequest(err, "failed to parse customer if from request"))
+		return httpError(*apperror.BadRequest(err, "failed to parse customer id from request"))
 	}
 
 	// load customer
@@ -255,4 +264,16 @@ func PostEditCustomer(c echo.Context) error {
 
 	// redirect user to view customer page
 	return redirect(c, helper.PageURLViewCustomer(tmplData.Request.ID))
+}
+
+func GetGenerateCustomers(c echo.Context) error {
+	ctx := c.(AppContext)
+
+	// create customer
+	if appErr := service.CreateFakeCustomers(ctx.User.ID, 1000); appErr != nil {
+		return httpError(*appErr)
+	}
+
+	// redirect user to customers list
+	return redirect(c, helper.PageURLCustomers())
 }

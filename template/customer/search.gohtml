@@ -1,5 +1,6 @@
 {{ $userLang := .User.Language }}
 {{ $request := .Request.Normalized }}
+{{ $currentPage := $request.Page }}
 
 {{ template "header" i18n "title.customers" $userLang }}
 {{ template "navbar" .NavbarData }}
@@ -27,9 +28,6 @@
                     </div>
                 </div>
             {{ else }}
-                {{ $pages := .Pages }}
-                {{ $currentPage := $request.Page }}
-
                 <div class="table-responsive">
                     <table class="table table-striped table-hover table-borderless table-sm">
                         <thead>
@@ -78,7 +76,9 @@
                     </table>
                 </div>
 
-                {{ if gt .Pages 1 }}
+                {{ $pagination := .PaginationData }}
+
+                {{ if gt $pagination.TotalPages 1 }}
                     <nav aria-label="Page navigation example">
                         <ul class="pagination pagination-sm justify-content-center">
                             <li class="page-item {{ if eq $currentPage 1 }} disabled {{ end }}">
@@ -89,16 +89,30 @@
                                 </a>
                             </li>
 
-                            {{ with seq .Pages }}
+                            {{ with seq $pagination.TotalPages }}
                                 {{ range . }}
-                                    <li class="page-item {{ if eq (inc .) $currentPage }} active {{ end }}">
-                                        <a class="page-link"
-                                           href="{{ linkSearchCustomers $request.Filter $request.Order $request.Direction false (inc .) }}"> {{ inc . }}</a>
-                                    </li>
+
+                                    {{ $halfLimit := div $pagination.PagesLimit 2 }}
+                                    {{ $leftLimit := sub $pagination.PagesLimit $halfLimit }}
+                                    {{ $rightLimit := sub $pagination.PagesLimit $halfLimit }}
+
+                                    {{ if lt $currentPage $halfLimit }}
+                                        {{ $leftLimit = $currentPage }}
+                                        {{ $rightLimit = sub $pagination.PagesLimit $leftLimit }}
+                                    {{ end }}
+
+                                    {{ if or (lt (sub $currentPage (inc .)) $leftLimit) (lt (sub (inc .) $currentPage) $rightLimit) }}
+                                        <li class="page-item {{ if eq (inc .) $currentPage }} active {{ end }}">
+                                            <a class="page-link"
+                                               href="{{ linkSearchCustomers $request.Filter $request.Order $request.Direction false (inc .) }}">
+                                                {{ inc . }}
+                                            </a>
+                                        </li>
+                                    {{ end}}
                                 {{ end }}
                             {{ end }}
 
-                            <li class="page-item {{ if eq $currentPage $pages }} disabled {{ end }}">
+                            <li class="page-item {{ if eq $currentPage $pagination.TotalPages }} disabled {{ end }}">
                                 <a class="page-link"
                                    href="{{ linkSearchCustomers $request.Filter $request.Order $request.Direction false (inc $currentPage) }}"
                                    aria-label="Next">

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/dmitriivoitovich/heameelega/controller/request"
 	"github.com/dmitriivoitovich/heameelega/dao"
 	"github.com/dmitriivoitovich/heameelega/dao/db"
@@ -14,7 +15,10 @@ import (
 	"github.com/google/uuid"
 )
 
-const pageSize = 10
+const (
+	PaginationPageSize   = 25
+	PaginationPagesLimit = 10
+)
 
 var spacesRegExp = regexp.MustCompile(`\s+`)
 
@@ -26,7 +30,7 @@ func SearchCustomers(userID uuid.UUID, req request.SearchCustomersNormalized) ([
 		filters = strings.Split(s, " ")
 	}
 
-	customers, err := dao.Customers(userID, req.Page, pageSize, req.Order, req.Direction, filters...)
+	customers, err := dao.Customers(userID, req.Page, PaginationPageSize, req.Order, req.Direction, filters...)
 	if err != nil {
 		return nil, 0, apperror.Internal(err, "failed to load customers by search request")
 	}
@@ -36,7 +40,7 @@ func SearchCustomers(userID uuid.UUID, req request.SearchCustomersNormalized) ([
 		return nil, 0, apperror.Internal(err, "failed to count customers by search request")
 	}
 
-	pages := uint32(math.Ceil(float64(total) / float64(pageSize)))
+	pages := uint32(math.Ceil(float64(total) / float64(PaginationPageSize)))
 
 	return customers, pages, nil
 }
@@ -159,4 +163,43 @@ func ConvertCustomerToEditReq(customer db.Customer) *request.EditCustomer {
 	}
 
 	return req
+}
+
+func CreateFakeCustomers(userID uuid.UUID, amount uint32) *apperror.Error {
+	for i := uint32(0); i < amount; i++ {
+		seed := time.Now().Nanosecond()
+		faker := gofakeit.New(int64(seed))
+
+		minBirthDate := time.Date(1965, 1, 1, 0, 0, 0, 0, time.UTC)
+		maxBirthDate := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+
+		gender := db.GenderMale
+		if faker.Gender() == "female" {
+			gender = db.GenderFemale
+		}
+
+		address := faker.Address().Address
+
+		customer := &db.Customer{
+			ID:        uuid.New(),
+			FirstName: faker.FirstName(),
+			LastName:  faker.LastName(),
+			BirthDate: faker.DateRange(minBirthDate, maxBirthDate),
+			Gender:    gender,
+			Email:     faker.Email(),
+			Address:   &address,
+			UserID:    userID,
+		}
+
+		if err := dao.CreateCustomer(customer); err != nil {
+			if dao.IsErrDuplicateKey(err) {
+				// ignore duplicate key error
+				continue
+			}
+
+			return apperror.Internal(err, "failed to create fake customer")
+		}
+	}
+
+	return nil
 }
