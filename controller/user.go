@@ -20,6 +20,13 @@ type registerUserTmplData struct {
 	Error         *apperror.Error
 }
 
+type userSettingsTmplData struct {
+	tmplData
+	Request       request.EditUser
+	InvalidFields []string
+	Error         *apperror.Error
+}
+
 func GetLogin(c echo.Context) error {
 	return RenderTmpl(c, tmplLoginUser, loginUserTmplData{})
 }
@@ -99,4 +106,74 @@ func PostLogout(c echo.Context) error {
 	}
 
 	return redirect(c, helper.PageURLLogin())
+}
+
+func GetSettings(c echo.Context) error {
+	ctx := c.(AppContext)
+
+	tmplData := userSettingsTmplData{
+		tmplData: tmplData{
+			User: *ctx.User,
+			NavbarData: NavbarData{
+				User:   *ctx.User,
+				Search: "",
+			},
+			SidebarData: SidebarData{
+				User:       *ctx.User,
+				ActivePage: "",
+			},
+		},
+		Request: request.EditUser{
+			Email:    ctx.User.Email,
+			Language: ctx.User.Language,
+		},
+	}
+
+	return RenderTmpl(c, tmplUserSettings, tmplData)
+}
+
+func PostSettings(c echo.Context) error {
+	ctx := c.(AppContext)
+
+	tmplData := userSettingsTmplData{
+		tmplData: tmplData{
+			User: *ctx.User,
+			NavbarData: NavbarData{
+				User:   *ctx.User,
+				Search: "",
+			},
+			SidebarData: SidebarData{
+				User:       *ctx.User,
+				ActivePage: "",
+			},
+		},
+	}
+
+	// bind request
+	if err := c.Bind(&tmplData.Request); err != nil {
+		return httpError(*apperror.BadRequest(err, "failed to bind edit user request"))
+	}
+
+	// validate request
+	tmplData.InvalidFields = tmplData.Request.Validate()
+	if len(tmplData.InvalidFields) > 0 {
+		return RenderTmpl(c, tmplCreateCustomer, tmplData)
+	}
+
+	// update user
+	if appErr := service.UserUpdate(ctx.User, tmplData.Request.Sanitized()); appErr != nil {
+		if appErr.IsValidation() {
+			tmplData.Error = appErr
+
+			return RenderTmpl(c, tmplUserSettings, tmplData)
+		}
+	}
+
+	// reset template data for the changes to take effect
+	tmplData.tmplData.User = *ctx.User
+	tmplData.tmplData.NavbarData.User = *ctx.User
+	tmplData.tmplData.SidebarData.User = *ctx.User
+
+	// render template
+	return RenderTmpl(c, tmplUserSettings, tmplData)
 }

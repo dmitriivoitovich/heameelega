@@ -59,6 +59,8 @@ func main() {
 
 	// routes require authorisation
 	e.POST("/logout", controller.PostLogout, controller.CheckAuth)
+	e.GET("/settings", controller.GetSettings, controller.CheckAuth)
+	e.POST("/settings", controller.PostSettings, controller.CheckAuth)
 	e.GET("/dashboard", controller.GetDashboard, controller.CheckAuth)
 	e.GET("/customers", controller.GetSearchCustomers, controller.CheckAuth)
 	e.GET("/customers/new", controller.GetCreateCustomer, controller.CheckAuth)

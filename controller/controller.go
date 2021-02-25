@@ -24,6 +24,7 @@ const (
 	TmplError500        = "error500"
 	tmplLoginUser       = "loginUser"
 	tmplRegisterUser    = "registerUser"
+	tmplUserSettings    = "userSettings"
 	tmplDashboard       = "dashboard"
 	tmplCreateCustomer  = "createCustomer"
 	tmplViewCustomer    = "viewCustomer"
@@ -56,6 +57,7 @@ var (
 		"linkLogin":           helper.PageURLLogin,
 		"linkRegister":        helper.PageURLRegister,
 		"linkLogout":          helper.PageURLLogout,
+		"linkUserSettings":    helper.PageURLUserSettings,
 		"linkDashboard":       helper.PageURLDashboard,
 		"linkCustomers":       helper.PageURLCustomers,
 		"linkSearchCustomers": helper.PageURLSearchCustomers,
@@ -103,6 +105,7 @@ var (
 		TmplError500:        tmplWithLayout("template/error/500.gohtml"),
 		tmplLoginUser:       tmplWithLayout("template/user/login.gohtml"),
 		tmplRegisterUser:    tmplWithLayout("template/user/register.gohtml"),
+		tmplUserSettings:    tmplWithLayout("template/user/settings.gohtml"),
 		tmplDashboard:       tmplWithLayout("template/dashboard/dashboard.gohtml"),
 		tmplCreateCustomer:  tmplWithLayout("template/customer/create.gohtml"),
 		tmplViewCustomer:    tmplWithLayout("template/customer/view.gohtml"),

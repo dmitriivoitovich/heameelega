@@ -92,3 +92,15 @@ func UserRegister(req request.RegisterUser) (*db.User, *apperror.Error) {
 
 	return user, nil
 }
+
+func UserUpdate(user *db.User, req request.EditUser) *apperror.Error {
+	if err := dao.UserUpdateEmailAndLanguage(user, req.Email, req.Language); err != nil {
+		if dao.IsErrDuplicateKey(err) {
+			return apperror.Validation(i18n.KeyErrorEmailTaken)
+		}
+
+		return apperror.Internal(err, "failed to update user")
+	}
+
+	return nil
+}

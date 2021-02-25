@@ -20,46 +20,63 @@
                 </div>
             </div>
 
-            <form class="row g-3">
-                <div class="col-md-6">
-                    <input type="text" class="form-control form-control-sm" value="{{ .Customer.FirstName }}" disabled/>
-                </div>
+            <form>
+                <div class="row mb-3">
+                    <div class="col-6 col-sm-5 col-xxl-3">
+                        <input type="text"
+                               class="form-control form-control-sm"
+                               value="{{ .Customer.FirstName }}"
+                               disabled/>
+                    </div>
 
-                <div class="col-md-6">
-                    <input type="text" class="form-control form-control-sm" value="{{ .Customer.LastName }}" disabled/>
-                </div>
-
-                <div class="col-md-12">
-                    <input type="email" class="form-control form-control-sm" value="{{ .Customer.Email }}" disabled/>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text">{{ i18n "field.birth-date" $userLang }}</span>
-                        <input type="date" class="form-control form-control-sm"
-                               value="{{ .Customer.BirthDate.Format "2006-01-02" }}" disabled/>
+                    <div class="col-6 col-sm-5 col-xxl-3">
+                        <input type="text"
+                               class="form-control form-control-sm"
+                               value="{{ .Customer.LastName }}"
+                               disabled/>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text">{{ i18n "field.gender" $userLang }}</span>
-                        <select class="form-select form-select-sm" disabled>
-                            <option value="male" {{ if .Customer.Gender }} selected {{ end }}>
-                                {{ i18n "field.gender-male" $userLang }}
-                            </option>
-                            <option value="female" {{ if not .Customer.Gender }} selected {{ end }}>
-                                {{ i18n "field.gender-female" $userLang }}
-                            </option>
-                        </select>
+                <div class="row mb-3">
+                    <div class="col-12 col-sm-10 col-xxl-6">
+                        <input type="email"
+                               class="form-control form-control-sm"
+                               value="{{ .Customer.Email }}"
+                               disabled/>
                     </div>
                 </div>
 
-                <div class="col-md-12">
-                    <input type="text"
-                           class="form-control form-control-sm"
-                           value="{{ if .Customer.Address }} {{ .Customer.Address }} {{ end }}"
-                           disabled/>
+                <div class="row mb-3">
+                    <div class="col-6 col-sm-5 col-xxl-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">{{ i18n "field.birth-date" $userLang }}</span>
+                            <input type="date" class="form-control form-control-sm"
+                                   value="{{ .Customer.BirthDate.Format "2006-01-02" }}" disabled/>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-5 col-xxl-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">{{ i18n "field.gender" $userLang }}</span>
+                            <select class="form-select form-select-sm" disabled>
+                                <option value="male" {{ if .Customer.Gender }} selected {{ end }}>
+                                    {{ i18n "field.gender-male" $userLang }}
+                                </option>
+                                <option value="female" {{ if not .Customer.Gender }} selected {{ end }}>
+                                    {{ i18n "field.gender-female" $userLang }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12 col-sm-10 col-xxl-6">
+                        <input type="text"
+                               class="form-control form-control-sm"
+                               value="{{ if .Customer.Address }} {{ .Customer.Address }} {{ end }}"
+                               disabled/>
+                    </div>
                 </div>
             </form>
         </main>

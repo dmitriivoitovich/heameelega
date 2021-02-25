@@ -29,6 +29,10 @@ func PageURLLogout() string {
 	return PageURLHome() + "logout"
 }
 
+func PageURLUserSettings() string {
+	return PageURLHome() + "settings"
+}
+
 func PageURLDashboard() string {
 	return PageURLHome() + "dashboard"
 }

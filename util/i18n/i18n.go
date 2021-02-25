@@ -10,14 +10,13 @@ const (
 	LanguageEnglish = "EN"
 	LanguageRussian = "RU"
 
-	// page titles
 	keyTitleLogin          Key = "title.login"
 	keyTitleRegister       Key = "title.register"
+	keyTitleSettings       Key = "title.settings"
 	keyTitleDashboard      Key = "title.dashboard"
 	keyTitleCustomers      Key = "title.customers"
 	keyTitleCreateCustomer Key = "title.create-customer"
 
-	// buttons
 	keyButtonLogin          Key = "button.login"
 	keyButtonRegister       Key = "button.register"
 	keyButtonLogout         Key = "button.logout"
@@ -25,9 +24,9 @@ const (
 	keyButtonCreateCustomer Key = "button.create-customer"
 	keyButtonEditCustomer   Key = "button.edit-customer"
 	keyButtonSaveCustomer   Key = "button.save-customer"
+	keyButtonSaveUser       Key = "button.save-user"
 	keyButtonCancel         Key = "button.cancel"
 
-	// form fields
 	keyFieldEmail        Key = "field.email"
 	keyFieldPassword     Key = "field.password"
 	keyFieldSearch       Key = "field.search"
@@ -38,12 +37,13 @@ const (
 	keyFieldGenderMale   Key = "field.gender-male"
 	keyFieldGenderFemale Key = "field.gender-female"
 	keyFieldAddress      Key = "field.address"
+	keyFieldLanguage     Key = "field.language"
+	keyFieldLanguageEn   Key = "field.language-en"
+	keyFieldLanguageRu   Key = "field.language-ru"
 
-	// links
 	keyLinkLogin    Key = "link.login"
 	keyLinkRegister Key = "link.register"
 
-	// table columns
 	keyColumnName      Key = "column.name"
 	keyColumnEmail     Key = "column.email"
 	keyColumnBirthDate Key = "column.birth-date"
@@ -62,12 +62,10 @@ const (
 	keyColumnNovember  Key = "column.november"
 	keyColumnDecember  Key = "column.december"
 
-	// error message
 	KeyErrorEmailTaken         Key = "error.email-taken"
 	KeyErrorCredentialsInvalid Key = "error.credentials-invalid"
 	KeyErrorDataCollision      Key = "error.data-collision"
 
-	// other
 	keyNoSearchResults Key = "message.no-search-results"
 )
 
@@ -87,6 +85,10 @@ var (
 		keyTitleDashboard: {
 			LanguageEnglish: "Dashboard",
 			LanguageRussian: "Главная",
+		},
+		keyTitleSettings: {
+			LanguageEnglish: "Settings",
+			LanguageRussian: "Настройки",
 		},
 		keyTitleCustomers: {
 			LanguageEnglish: "Customers",
@@ -130,6 +132,10 @@ var (
 			LanguageEnglish: "Cancel",
 			LanguageRussian: "Отмена",
 		},
+		keyButtonSaveUser: {
+			LanguageEnglish: "Save",
+			LanguageRussian: "Сохранить",
+		},
 
 		// form fields
 		keyFieldEmail: {
@@ -154,7 +160,7 @@ var (
 		},
 		keyFieldBirthDate: {
 			LanguageEnglish: "Birth date",
-			LanguageRussian: "День рождения",
+			LanguageRussian: "Дата рождения",
 		},
 		keyFieldGender: {
 			LanguageEnglish: "Gender",
@@ -171,6 +177,18 @@ var (
 		keyFieldAddress: {
 			LanguageEnglish: "Address",
 			LanguageRussian: "Адрес",
+		},
+		keyFieldLanguage: {
+			LanguageEnglish: "Language",
+			LanguageRussian: "Язык",
+		},
+		keyFieldLanguageEn: {
+			LanguageEnglish: "English",
+			LanguageRussian: "Английский",
+		},
+		keyFieldLanguageRu: {
+			LanguageEnglish: "Russian",
+			LanguageRussian: "Русский",
 		},
 
 		// links
@@ -194,7 +212,7 @@ var (
 		},
 		keyColumnBirthDate: {
 			LanguageEnglish: "Birth date",
-			LanguageRussian: "День рождения",
+			LanguageRussian: "Дата рождения",
 		},
 		keyColumnGender: {
 			LanguageEnglish: "Gender",
@@ -256,8 +274,8 @@ var (
 
 		// error messages
 		KeyErrorEmailTaken: {
-			LanguageEnglish: "Email taken",
-			LanguageRussian: "Имейл занят",
+			LanguageEnglish: "Email address is already in use",
+			LanguageRussian: "Имейл адрес уже используется",
 		},
 		KeyErrorCredentialsInvalid: {
 			LanguageEnglish: "Credentials invalid",

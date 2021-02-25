@@ -54,3 +54,23 @@ func UserRemoveAccessToken(user *db.User) error {
 		Update("access_token", user.AccessToken).
 		Error
 }
+
+func UserUpdateEmailAndLanguage(user *db.User, email, language string) error {
+	err := db.DB.
+		Model(user).
+		Updates(
+			map[string]interface{}{
+				"Email":    email,
+				"Language": language,
+			},
+		).
+		Error
+	if err != nil {
+		return err
+	}
+
+	user.Email = email
+	user.Language = language
+
+	return nil
+}

@@ -1,0 +1,70 @@
+{{ $userLang := .User.Language }}
+
+{{ template "header" i18n "title.settings" $userLang }}
+{{ template "navbar" .NavbarData }}
+
+<div class="container-fluid">
+    <div class="row">
+        {{ template "sidebar" .SidebarData }}
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+                <h1 class="h2">{{ i18n "title.settings" $userLang }}</h1>
+            </div>
+
+            <form method="post">
+                {{ if .Error }}
+                    <div class="row mb-4">
+                        <div class="col-12 col-sm-6 col-xxl-3">
+                            <div class="alert alert-danger py-1 mb-0" role="alert">
+                                {{ i18n .Error.I18nKey $userLang }}
+                            </div>
+                        </div>
+                    </div>
+                {{ end }}
+
+                <div class="row mb-3">
+                    <div class="col-12 col-sm-6 col-xxl-3">
+                        <input
+                                type="email"
+                                class="form-control form-control-sm {{ if inSlice .InvalidFields "email" }} is-invalid {{ end }}"
+                                name="email"
+                                value="{{ .Request.Email }}"
+                                placeholder="{{ i18n "field.email" $userLang }}"
+                                maxlength="255"
+                                required/>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-12 col-sm-6 col-xxl-3">
+                        <div class="input-group input-group-sm has-validation">
+                            <span class="input-group-text">{{ i18n "field.language" $userLang }}</span>
+                            <select
+                                    class="form-select form-select-sm {{ if inSlice .InvalidFields "language" }} is-invalid {{ end }}"
+                                    name='language'
+                                    required>
+                                <option value="EN" {{ if eq .Request.Language "EN" }} selected {{ end }}>
+                                    {{ i18n "field.language-en" $userLang }}
+                                </option>
+                                <option value="RU" {{ if eq .Request.Language "RU" }} selected {{ end }}>
+                                    {{ i18n "field.language-ru" $userLang }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                            {{ i18n "button.save-user" $userLang }}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+
+{{ template "footer" }}
