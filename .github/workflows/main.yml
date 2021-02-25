@@ -51,6 +51,7 @@ jobs:
           script: |
             docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_TOKEN
             export IMAGE=$DOCKERHUB_USERNAME/heameelega:latest
-            docker pull IMAGE
             docker stop heameelega || true
-            docker run --name heameelega --rm -d -e VIPER_DB_PASSWORD=$DB_PASSWORD -e VIPER_APP_HOST="http://heameele.ga" --network=host $IMAGE
+            docker system prune -af
+            docker pull IMAGE
+            docker run --name heameelega --rm -d -e VIPER_DB_PASSWORD=$DB_PASSWORD -e VIPER_APP_HOST="heameele.ga" --network=host $IMAGE
