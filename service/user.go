@@ -87,7 +87,7 @@ func UserRegister(req request.RegisterUser) (*db.User, *apperror.Error) {
 	}
 
 	if err := dao.UserUpdateAccessToken(user, uuid.New()); err != nil {
-		return nil, apperror.Internal(err, "failed to update user access toekn")
+		return nil, apperror.Internal(err, "failed to update user access token")
 	}
 
 	return user, nil
