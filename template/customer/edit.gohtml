@@ -3,11 +3,11 @@
 {{ template "header" (print .Request.FirstName " " .Request.LastName) }}
 {{ template "navbar" .NavbarData }}
 
-<div class="container-fluid">
-    <div class="row">
+<div class="container-fluid h-100">
+    <div class="row h-100">
         {{ template "sidebar" .SidebarData }}
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 h-100">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
                 <h1 class="h2">{{ print .Request.FirstName " " .Request.LastName }}</h1>
             </div>
@@ -110,12 +110,12 @@
 
                 <div class="row mb-3">
                     <div class="col-12 col-sm-10 col-xxl-6">
-                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
                             {{ i18n "button.save-customer" $userLang }}
                         </button>
 
                         <a href="{{ linkViewCustomer .Request.ID }}"
-                           class="btn btn-sm btn-outline-secondary"
+                           class="btn btn-sm btn-outline-primary"
                            role="button">
                             {{ i18n "button.cancel" $userLang }}
                         </a>

@@ -5,16 +5,16 @@
 {{ template "header" i18n "title.customers" $userLang }}
 {{ template "navbar" .NavbarData }}
 
-<div class="container-fluid">
-    <div class="row">
+<div class="container-fluid h-100">
+    <div class="row h-100">
         {{ template "sidebar" .SidebarData }}
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 h-100">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
                 <h1 class="h2">{{ i18n "title.customers" $userLang }}</h1>
 
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <a href="{{ linkNewCustomer }}" class="btn btn-sm btn-outline-secondary" role="button">
+                    <a href="{{ linkNewCustomer }}" class="btn btn-sm btn-outline-primary" role="button">
                         <span data-feather="user-plus"></span>
                         {{ i18n "button.add-customer" $userLang }}
                     </a>
@@ -23,7 +23,7 @@
 
             {{ if not .Customers }}
                 <div class="col-md-12">
-                    <div class="alert alert-secondary py-1" role="alert">
+                    <div class="alert alert-primary py-1" role="alert">
                         {{ i18n "message.no-search-results" $userLang }}
                     </div>
                 </div>

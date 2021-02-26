@@ -20,6 +20,7 @@ const (
 	keyButtonLogin          Key = "button.login"
 	keyButtonRegister       Key = "button.register"
 	keyButtonLogout         Key = "button.logout"
+	keyButtonUserSettings   Key = "button.user-settings"
 	keyButtonAddCustomer    Key = "button.add-customer"
 	keyButtonCreateCustomer Key = "button.create-customer"
 	keyButtonEditCustomer   Key = "button.edit-customer"
@@ -111,6 +112,10 @@ var (
 		keyButtonLogout: {
 			LanguageEnglish: "Sign out",
 			LanguageRussian: "Выйти",
+		},
+		keyButtonUserSettings: {
+			LanguageEnglish: "Settings",
+			LanguageRussian: "Настройки",
 		},
 		keyButtonAddCustomer: {
 			LanguageEnglish: "Add",
