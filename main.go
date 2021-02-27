@@ -17,7 +17,8 @@ import (
 )
 
 const (
-	httpPort = "80"
+	httpPort  = "80"
+	httpsPort = "443"
 
 	httpServerShutdownTimeout = time.Second * 30
 
@@ -72,7 +73,7 @@ func main() {
 	e.POST("/customers/:id/delete", controller.DeleteCustomer, controller.CheckAuth)
 
 	// http server instance
-	go startWebServer(e)
+	startWebServer(e)
 
 	// wait for interrupt signal
 	quit := make(chan os.Signal, 1)
@@ -89,17 +90,35 @@ func main() {
 }
 
 func startWebServer(e *echo.Echo) {
-	s := &http.Server{
-		Addr:           ":" + httpPort,
+	e.Server = &http.Server{
 		ReadTimeout:    httpReadTimeout,
 		WriteTimeout:   httpWriteTimeout,
 		IdleTimeout:    httpIdleTimeout,
 		MaxHeaderBytes: maxHeaderSize,
 	}
 
-	if err := e.StartServer(s); err != nil {
-		e.Logger.Info("shutting down the server")
+	e.TLSServer = &http.Server{
+		ReadTimeout:    httpReadTimeout,
+		WriteTimeout:   httpWriteTimeout,
+		IdleTimeout:    httpIdleTimeout,
+		MaxHeaderBytes: maxHeaderSize,
 	}
+
+	go func() {
+		if err := e.Start(":" + httpPort); err != nil {
+			e.Logger.Info("shutting down the http server")
+		}
+	}()
+
+	go func() {
+		tlsConfig := config.AppTLS()
+
+		if tlsConfig.Enabled {
+			if err := e.StartTLS(":"+httpsPort, tlsConfig.Cert, tlsConfig.Key); err != nil {
+				e.Logger.Info("shutting down the https server")
+			}
+		}
+	}()
 }
 
 func httpErrorHandler(err error, c echo.Context) {

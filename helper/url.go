@@ -10,7 +10,7 @@ import (
 
 func PageURLHome() string {
 	scheme := "http://"
-	if config.AppTLS() {
+	if config.AppTLS().Enabled {
 		scheme = "https://"
 	}
 

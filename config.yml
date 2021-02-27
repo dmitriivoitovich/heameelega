@@ -1,6 +1,9 @@
 app:
-  host: localhost
-  tls: false
+  host: heameele.ga
+  tls:
+    enabled: false
+    cert:
+    key:
 
 db:
   host: localhost

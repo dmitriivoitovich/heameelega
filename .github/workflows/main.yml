@@ -43,15 +43,17 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           DB_PASSWORD: ${{secrets.PRODUCTION_DB_PASSWORD}}
+          TLS_CERT_B64: ${{secrets.TLS_CERT_B64}}
+          TLS_KEY_B64: ${{secrets.TLS_KEY_B64}}
         with:
           host: heameele.ga
           username: root
           key: ${{ secrets.SSH_KEY }}
-          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,DB_PASSWORD
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,DB_PASSWORD,TLS_CERT_B64,TLS_KEY_B64
           script: |
             docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_TOKEN
             export IMAGE=$DOCKERHUB_USERNAME/heameelega:latest
             docker stop heameelega || true
             docker system prune -af
             docker pull IMAGE
-            docker run --name heameelega --rm -d -e VIPER_DB_PASSWORD=$DB_PASSWORD -e VIPER_APP_HOST="heameele.ga" --network=host $IMAGE
+            docker run --name heameelega --rm -d -e VIPER_APP_HOST="heameele.ga" -e VIPER_APP_TLS_ENABLED=true -e VIPER_APP_TLS_CERT=$TLS_CERT_B64 -e VIPER_APP_TLS_KEY=$TLS_KEY_B64 -e VIPER_DB_PASSWORD=$DB_PASSWORD --network=host $IMAGE

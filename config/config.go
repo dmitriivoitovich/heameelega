@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/base64"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -20,12 +21,25 @@ type DBConf struct {
 	Port     uint32
 }
 
+type TLSConf struct {
+	Enabled bool
+	Cert    []byte
+	Key     []byte
+}
+
 func AppHost() string {
 	return getStr("app.host")
 }
 
-func AppTLS() bool {
-	return getBool("app.tls")
+func AppTLS() TLSConf {
+	cert, _ := base64.StdEncoding.DecodeString(getStr("app.tls.cert"))
+	key, _ := base64.StdEncoding.DecodeString(getStr("app.tls.key"))
+
+	return TLSConf{
+		Enabled: getBool("app.tls.enabled"),
+		Cert:    cert,
+		Key:     key,
+	}
 }
 
 func DBConfig() DBConf {
