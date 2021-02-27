@@ -2,6 +2,8 @@ package db
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/dmitriivoitovich/heameelega/config"
@@ -9,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const (
@@ -70,7 +73,18 @@ func InitConn(conf config.DBConf, logger echo.Logger) {
 }
 
 func connect(dsn string) (*gorm.DB, error) {
-	conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags),
+		logger.Config{
+			SlowThreshold: time.Second,
+			LogLevel:      logger.Silent,
+			Colorful:      true,
+		},
+	)
+
+	gormConfig := &gorm.Config{Logger: newLogger}
+
+	conn, err := gorm.Open(postgres.Open(dsn), gormConfig)
 	if err != nil {
 		return nil, err
 	}
