@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/dmitriivoitovich/heameelega/config"
-	"github.com/google/uuid"
+	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,34 +18,7 @@ const (
 	connAttemptsDelay = time.Second * 5
 )
 
-type BaseModel struct {
-	ID        uuid.UUID      `gorm:"column:id;primaryKey;type:uuid;not null"`
-	CreatedAt time.Time      `gorm:"column:created_at;type:timestamp without time zone;not null"`
-	UpdatedAt time.Time      `gorm:"column:updated_at;type:timestamp without time zone;not null"`
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp without time zone;default:null;index"`
-}
-
 var DB *gorm.DB
-
-func (m *BaseModel) BeforeCreate(tx *gorm.DB) error {
-	if m.ID == uuid.Nil {
-		m.ID = uuid.New()
-	}
-
-	if !m.CreatedAt.IsZero() {
-		tx.Statement.SetColumn("CreatedAt", m.CreatedAt)
-	}
-
-	if !m.UpdatedAt.IsZero() {
-		tx.Statement.SetColumn("UpdatedAt", m.UpdatedAt)
-	}
-
-	if m.DeletedAt.Valid {
-		tx.Statement.SetColumn("DeletedAt", m.DeletedAt)
-	}
-
-	return nil
-}
 
 func InitConn(conf config.DBConf, logger echo.Logger) {
 	dsn := fmt.Sprintf(
@@ -84,14 +57,37 @@ func connect(dsn string) (*gorm.DB, error) {
 
 	gormConfig := &gorm.Config{Logger: newLogger}
 
+	// connect to the database
 	conn, err := gorm.Open(postgres.Open(dsn), gormConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := conn.AutoMigrate(&User{}, &Customer{}); err != nil {
+	// run migrations
+	if err := migrate(conn); err != nil {
 		return nil, err
 	}
 
 	return conn, nil
+}
+
+func migrate(db *gorm.DB) error {
+	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{})
+
+	m.InitSchema(func(tx *gorm.DB) error {
+		if err := tx.AutoMigrate(&User{}, &Customer{}); err != nil {
+			return err
+		}
+
+		if err := tx.Exec("CREATE EXTENSION IF NOT EXISTS pg_trgm").Error; err != nil {
+			return err
+		}
+
+		createSearchIndexQuery := "CREATE INDEX idx_gin_customers_first_name_last_name_lower " +
+			"ON customers USING gin (lower(first_name) gin_trgm_ops, lower(last_name) gin_trgm_ops)"
+
+		return tx.Exec(createSearchIndexQuery).Error
+	})
+
+	return m.Migrate()
 }

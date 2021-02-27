@@ -19,5 +19,5 @@ type Customer struct {
 	Gender    bool      `gorm:"column:gender;type:boolean;not null"`
 	Email     string    `gorm:"column:email;type:varchar(255);not null;index:idx_customers_email_user_id_unique,unique"`
 	Address   *string   `gorm:"column:address;type:varchar(200);default:null"`
-	UserID    uuid.UUID `gorm:"column:user_id;type:uuid;not null;index:idx_customers_email_user_id_unique,unique"`
+	UserID    uuid.UUID `gorm:"column:user_id;type:uuid;not null;index:idx_customers_email_user_id_unique,unique;index"`
 }
