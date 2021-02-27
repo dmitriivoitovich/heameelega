@@ -63,7 +63,7 @@
                         <tbody>
                         {{ with .Customers }}
                             {{ range . }}
-                                <tr onclick="window.location='{{ linkViewCustomer .ID }}'">
+                                <tr data-href='{{ linkViewCustomer .ID }}'>
                                     <td>{{ .FirstName }} {{ .LastName }}</td>
                                     <td>{{ .Email }}</td>
                                     <td>{{ .BirthDate.Format "02.01.2006" }}</td>
@@ -79,12 +79,11 @@
                 {{ $pagination := .PaginationData }}
 
                 {{ if gt $pagination.TotalPages 1 }}
-                    <nav aria-label="Page navigation example">
+                    <nav>
                         <ul class="pagination pagination-sm justify-content-center">
                             <li class="page-item {{ if eq $currentPage 1 }} disabled {{ end }}">
                                 <a class="page-link"
-                                   href="{{ linkSearchCustomers $request.Filter $request.Order $request.Direction false (dec $currentPage) }}"
-                                   aria-label="Previous">
+                                   href="{{ linkSearchCustomers $request.Filter $request.Order $request.Direction false (dec $currentPage) }}">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
@@ -114,8 +113,7 @@
 
                             <li class="page-item {{ if eq $currentPage $pagination.TotalPages }} disabled {{ end }}">
                                 <a class="page-link"
-                                   href="{{ linkSearchCustomers $request.Filter $request.Order $request.Direction false (inc $currentPage) }}"
-                                   aria-label="Next">
+                                   href="{{ linkSearchCustomers $request.Filter $request.Order $request.Direction false (inc $currentPage) }}">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
@@ -126,5 +124,13 @@
         </main>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        $('table tbody').on('click', 'tr', function () {
+            window.location = $(this).attr('data-href');
+        });
+    }, false);
+</script>
 
 {{ template "footer" }}
