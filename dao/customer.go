@@ -24,6 +24,7 @@ const customersMonthlyRegistrationsQuery = `
 			where
 				user_id = ?
 				and (created_at between ? and ?)
+				and deleted_at is null
 			group by
 					 date_trunc('month', created_at)
 		) t on t.month = s.date
