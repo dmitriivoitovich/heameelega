@@ -72,5 +72,9 @@ func PageURLViewCustomer(id uuid.UUID) string {
 }
 
 func PageURLEditCustomer(id uuid.UUID) string {
-	return PageURLHome() + "customers/" + id.String() + "/edit"
+	return PageURLViewCustomer(id) + "/edit"
+}
+
+func PageURLDeleteCustomer(id uuid.UUID) string {
+	return PageURLViewCustomer(id) + "/delete"
 }

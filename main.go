@@ -69,6 +69,7 @@ func main() {
 	e.GET("/customers/:id", controller.GetViewCustomer, controller.CheckAuth)
 	e.GET("/customers/:id/edit", controller.GetEditCustomer, controller.CheckAuth)
 	e.POST("/customers/:id/edit", controller.PostEditCustomer, controller.CheckAuth)
+	e.POST("/customers/:id/delete", controller.DeleteCustomer, controller.CheckAuth)
 
 	// http server instance
 	go startWebServer(e)

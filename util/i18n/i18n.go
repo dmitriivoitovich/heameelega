@@ -16,6 +16,7 @@ const (
 	keyTitleDashboard      Key = "title.dashboard"
 	keyTitleCustomers      Key = "title.customers"
 	keyTitleCreateCustomer Key = "title.create-customer"
+	keyTitleConfirmation   Key = "title.confirmation"
 
 	keyButtonLogin          Key = "button.login"
 	keyButtonRegister       Key = "button.register"
@@ -24,6 +25,7 @@ const (
 	keyButtonAddCustomer    Key = "button.add-customer"
 	keyButtonCreateCustomer Key = "button.create-customer"
 	keyButtonEditCustomer   Key = "button.edit-customer"
+	keyButtonDeleteCustomer Key = "button.delete-customer"
 	keyButtonSaveCustomer   Key = "button.save-customer"
 	keyButtonSaveUser       Key = "button.save-user"
 	keyButtonCancel         Key = "button.cancel"
@@ -63,6 +65,8 @@ const (
 	keyColumnNovember  Key = "column.month-11"
 	keyColumnDecember  Key = "column.month-12"
 
+	keyTextRemoveWarning Key = "text.remove-confirmation-warning"
+
 	KeyErrorEmailTaken         Key = "error.email-taken"
 	KeyErrorCredentialsInvalid Key = "error.credentials-invalid"
 	KeyErrorDataCollision      Key = "error.data-collision"
@@ -99,6 +103,10 @@ var (
 			LanguageEnglish: "New customer",
 			LanguageRussian: "Новый клиент",
 		},
+		keyTitleConfirmation: {
+			LanguageEnglish: "Confirmation",
+			LanguageRussian: "Подтверждение",
+		},
 
 		// buttons
 		keyButtonLogin: {
@@ -128,6 +136,10 @@ var (
 		keyButtonEditCustomer: {
 			LanguageEnglish: "Edit",
 			LanguageRussian: "Редактировать",
+		},
+		keyButtonDeleteCustomer: {
+			LanguageEnglish: "Delete",
+			LanguageRussian: "Удалить",
 		},
 		keyButtonSaveCustomer: {
 			LanguageEnglish: "Save",
@@ -275,6 +287,12 @@ var (
 		keyColumnDecember: {
 			LanguageEnglish: "December",
 			LanguageRussian: "Декабрь",
+		},
+
+		// text
+		keyTextRemoveWarning: {
+			LanguageEnglish: "Are you sure you want to remove",
+			LanguageRussian: "Вы уверены, что хотите удалить",
 		},
 
 		// error messages

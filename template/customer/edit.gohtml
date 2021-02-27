@@ -10,6 +10,16 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 h-100">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
                 <h1 class="h2">{{ print .Request.FirstName " " .Request.LastName }}</h1>
+
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#confirmDeleteModal">
+                        <span data-feather="trash-2"></span>
+                        {{ i18n "button.delete-customer" $userLang }}
+                    </button>
+                </div>
             </div>
 
             <form method="post">
@@ -111,18 +121,54 @@
                 <div class="row mb-3">
                     <div class="col-12 col-sm-10 col-xxl-6">
                         <button type="submit" class="btn btn-outline-primary btn-sm">
+                            <span data-feather="save"></span>
                             {{ i18n "button.save-customer" $userLang }}
                         </button>
 
                         <a href="{{ linkViewCustomer .Request.ID }}"
-                           class="btn btn-sm btn-outline-primary"
+                           class="btn btn-sm btn-outline-secondary"
                            role="button">
+                            <span data-feather="x-circle"></span>
                             {{ i18n "button.cancel" $userLang }}
                         </a>
                     </div>
                 </div>
             </form>
         </main>
+    </div>
+</div>
+
+<div class="modal fade"
+     id="confirmDeleteModal"
+     tabindex="-1"
+     aria-labelledby="confirmDeleteModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">{{ i18n "title.confirmation" $userLang }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                {{ i18n "text.remove-confirmation-warning" $userLang }}
+                <b>{{ print .Request.FirstName " " .Request.LastName }}</b>?
+            </div>
+
+            <div class="modal-footer">
+                <form method="post" action="{{ linkDeleteCustomer .Request.ID }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <span data-feather="trash-2"></span>
+                        {{ i18n "button.delete-customer" $userLang }}
+                    </button>
+
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">
+                        <span data-feather="x-circle"></span>
+                        {{ i18n "button.cancel" $userLang }}
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

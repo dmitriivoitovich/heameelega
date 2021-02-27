@@ -80,6 +80,10 @@ func UpdateCustomer(customer *db.Customer) error {
 		Error
 }
 
+func DeleteCustomer(customer *db.Customer) error {
+	return db.DB.Delete(customer).Error
+}
+
 func Customers(userID uuid.UUID, page, pageSize uint32, order, direction string, filters ...string) ([]db.Customer, error) {
 	customers := make([]db.Customer, 0)
 

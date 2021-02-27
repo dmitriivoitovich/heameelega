@@ -113,34 +113,6 @@ func UpdateCustomer(userID uuid.UUID, req request.EditCustomer) *apperror.Error 
 	return nil
 }
 
-func convertCreateReqToCustomer(userID uuid.UUID, req request.CreateCustomer) (*db.Customer, *apperror.Error) {
-	gender := db.GenderMale
-	if req.Gender == request.GenderFemale {
-		gender = db.GenderFemale
-	}
-
-	customer := &db.Customer{
-		FirstName: req.FirstName,
-		LastName:  req.LastName,
-		Gender:    gender,
-		Email:     req.Email,
-		UserID:    userID,
-	}
-
-	date, err := req.BirthDateTime()
-	if err != nil {
-		return nil, apperror.BadRequest(err, "failed to parse birth date from request")
-	}
-
-	customer.BirthDate = *date
-
-	if req.Address != "" {
-		customer.Address = &req.Address
-	}
-
-	return customer, nil
-}
-
 func ConvertCustomerToEditReq(customer db.Customer) *request.EditCustomer {
 	req := &request.EditCustomer{
 		ID:        customer.ID,
@@ -217,4 +189,19 @@ func DashboardStats(userID uuid.UUID) ([]dao.CustomerMonthlyRegistrations, *appe
 	}
 
 	return stats, nil
+}
+
+func DeleteCustomer(userID, customerID uuid.UUID) *apperror.Error {
+	// load customer
+	customer, appErr := ViewCustomer(userID, customerID)
+	if appErr != nil {
+		return appErr
+	}
+
+	// delete customer
+	if err := dao.DeleteCustomer(customer); err != nil {
+		return apperror.Internal(err, "failed to delete customer")
+	}
+
+	return nil
 }

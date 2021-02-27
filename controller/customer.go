@@ -277,3 +277,21 @@ func GetGenerateCustomers(c echo.Context) error {
 	// redirect user to customers list
 	return redirect(c, helper.PageURLCustomers())
 }
+
+func DeleteCustomer(c echo.Context) error {
+	ctx := c.(AppContext)
+
+	// parse customer id from request
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		return httpError(*apperror.BadRequest(err, "failed to parse customer id from request"))
+	}
+
+	// delete customer
+	if appErr := service.DeleteCustomer(ctx.User.ID, id); appErr != nil {
+		return httpError(*appErr)
+	}
+
+	// redirect user to the customers page
+	return redirect(c, helper.PageURLCustomers())
+}

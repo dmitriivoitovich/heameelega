@@ -19,10 +19,10 @@ const (
 )
 
 type BaseModel struct {
-	ID        uuid.UUID  `gorm:"column:id;primaryKey;type:uuid;not null"`
-	CreatedAt time.Time  `gorm:"column:created_at;type:timestamp without time zone;not null"`
-	UpdatedAt time.Time  `gorm:"column:updated_at;type:timestamp without time zone;not null"`
-	DeletedAt *time.Time `gorm:"column:deleted_at;type:timestamp without time zone;default:null;index"`
+	ID        uuid.UUID      `gorm:"column:id;primaryKey;type:uuid;not null"`
+	CreatedAt time.Time      `gorm:"column:created_at;type:timestamp without time zone;not null"`
+	UpdatedAt time.Time      `gorm:"column:updated_at;type:timestamp without time zone;not null"`
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp without time zone;default:null;index"`
 }
 
 var DB *gorm.DB
@@ -40,7 +40,7 @@ func (m *BaseModel) BeforeCreate(tx *gorm.DB) error {
 		tx.Statement.SetColumn("UpdatedAt", m.UpdatedAt)
 	}
 
-	if m.DeletedAt != nil && !m.DeletedAt.IsZero() {
+	if m.DeletedAt.Valid {
 		tx.Statement.SetColumn("DeletedAt", m.DeletedAt)
 	}
 

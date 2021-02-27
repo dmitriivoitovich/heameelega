@@ -64,6 +64,7 @@ var (
 		"linkNewCustomer":     helper.PageURLNewCustomer,
 		"linkViewCustomer":    helper.PageURLViewCustomer,
 		"linkEditCustomer":    helper.PageURLEditCustomer,
+		"linkDeleteCustomer":  helper.PageURLDeleteCustomer,
 		"inSlice": func(slice []string, key string) bool {
 			for i := range slice {
 				if slice[i] == key {
