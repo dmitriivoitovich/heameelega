@@ -2,13 +2,52 @@ package dao
 
 import (
 	"strings"
+	"time"
 
 	"github.com/dmitriivoitovich/heameelega/dao/db"
 	"github.com/google/uuid"
 )
 
+const customersMonthlyRegistrationsQuery = `
+	select
+		   extract(month from date_trunc('month', s.date)) as month,
+		   coalesce(t.registrations, 0) as registrations
+	from
+		 generate_series(?::date, ?::date, '1 month') as s
+	left join
+		(
+			select
+				   DATE_TRUNC('month', created_at) as month,
+				   count(ID) as registrations
+			from
+				 customers
+			where
+				user_id = ?
+				and (created_at between ? and ?)
+			group by
+					 date_trunc('month', created_at)
+		) t on t.month = s.date
+	order by
+		s.date
+`
+
+type CustomerMonthlyRegistrations struct {
+	Month         uint8
+	Registrations uint32
+}
+
 func CreateCustomer(customer *db.Customer) error {
 	return db.DB.Create(customer).Error
+}
+
+func CustomersMonthlyRegistrations(userID uuid.UUID, start, end time.Time) ([]CustomerMonthlyRegistrations, error) {
+	res := make([]CustomerMonthlyRegistrations, 0)
+
+	if err := db.DB.Raw(customersMonthlyRegistrationsQuery, start, end, userID, start, end).Scan(&res).Error; err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 func CustomerByIDAndUserID(id, userID uuid.UUID) (*db.Customer, error) {

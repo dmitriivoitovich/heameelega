@@ -12,7 +12,7 @@ const (
 )
 
 type User struct {
-	ID          uuid.UUID  `gorm:"column:id;primaryKey;type:uuid;not null"`
+	BaseModel
 	Email       string     `gorm:"column:email;type:varchar(255);not null;uniqueIndex"`
 	Password    string     `gorm:"column:password;type:char(60);not null"`
 	AccessToken *uuid.UUID `gorm:"column:access_token;type:uuid;default:null"`

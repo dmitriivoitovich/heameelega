@@ -120,7 +120,6 @@ func convertCreateReqToCustomer(userID uuid.UUID, req request.CreateCustomer) (*
 	}
 
 	customer := &db.Customer{
-		ID:        uuid.New(),
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Gender:    gender,
@@ -167,11 +166,9 @@ func ConvertCustomerToEditReq(customer db.Customer) *request.EditCustomer {
 
 func CreateFakeCustomers(userID uuid.UUID, amount uint32) *apperror.Error {
 	for i := uint32(0); i < amount; i++ {
-		seed := time.Now().Nanosecond()
+		now := time.Now()
+		seed := now.Nanosecond()
 		faker := gofakeit.New(int64(seed))
-
-		minBirthDate := time.Date(1965, 1, 1, 0, 0, 0, 0, time.UTC)
-		maxBirthDate := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
 
 		gender := db.GenderMale
 		if faker.Gender() == "female" {
@@ -179,12 +176,17 @@ func CreateFakeCustomers(userID uuid.UUID, amount uint32) *apperror.Error {
 		}
 
 		address := faker.Address().Address
+		birthDate := faker.DateRange(now.AddDate(-60, 0, 0), now.AddDate(-18, 0, 0))
+		registerDate := faker.DateRange(now.AddDate(-1, 0, 0), now)
 
 		customer := &db.Customer{
-			ID:        uuid.New(),
+			BaseModel: db.BaseModel{
+				CreatedAt: registerDate,
+				UpdatedAt: registerDate,
+			},
 			FirstName: faker.FirstName(),
 			LastName:  faker.LastName(),
-			BirthDate: faker.DateRange(minBirthDate, maxBirthDate),
+			BirthDate: birthDate,
 			Gender:    gender,
 			Email:     faker.Email(),
 			Address:   &address,
@@ -202,4 +204,17 @@ func CreateFakeCustomers(userID uuid.UUID, amount uint32) *apperror.Error {
 	}
 
 	return nil
+}
+
+func DashboardStats(userID uuid.UUID) ([]dao.CustomerMonthlyRegistrations, *apperror.Error) {
+	end := time.Now()
+	currentYear, currentMonth, _ := end.Date()
+	start := time.Date(currentYear-1, currentMonth+1, 1, 0, 0, 0, 0, end.Location())
+
+	stats, err := dao.CustomersMonthlyRegistrations(userID, start, end)
+	if err != nil {
+		return nil, apperror.Internal(err, "failed to load customer registrations data")
+	}
+
+	return stats, nil
 }

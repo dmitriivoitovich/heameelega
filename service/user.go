@@ -72,8 +72,7 @@ func UserRegister(req request.RegisterUser) (*db.User, *apperror.Error) {
 	}
 
 	user := &db.User{
-		ID:       uuid.New(),
-		Email:    strings.ToLower(req.Email),
+		Email:    req.Email,
 		Password: string(hash),
 		Language: db.LanguageCodeEnglish,
 	}

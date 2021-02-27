@@ -1,7 +1,6 @@
 {{ $userLang := .User.Language }}
 
 {{ template "header" (i18n "title.dashboard" $userLang) }}
-
 {{ template "navbar" .NavbarData }}
 
 <div class="container-fluid h-100">
@@ -29,33 +28,15 @@
             type: 'line',
             data: {
                 labels: [
-                    '{{ i18n "column.march" $userLang}}',
-                    '{{ i18n "column.april" $userLang}}',
-                    '{{ i18n "column.may" $userLang}}',
-                    '{{ i18n "column.june" $userLang}}',
-                    '{{ i18n "column.july" $userLang}}',
-                    '{{ i18n "column.august" $userLang}}',
-                    '{{ i18n "column.september" $userLang}}',
-                    '{{ i18n "column.october" $userLang}}',
-                    '{{ i18n "column.november" $userLang}}',
-                    '{{ i18n "column.december" $userLang}}',
-                    '{{ i18n "column.january" $userLang}}',
-                    '{{ i18n "column.february" $userLang}}',
+                    {{ range .Stats.Keys }}
+                        '{{ i18n . $userLang}}',
+                    {{ end }}
                 ],
                 datasets: [{
                     data: [
-                        127,
-                        190,
-                        285,
-                        427,
-                        640,
-                        960,
-                        1440,
-                        2160,
-                        3240,
-                        4860,
-                        7290,
-                        10935,
+                        {{ range .Stats.Values }}
+                            {{ . }},
+                        {{ end }}
                     ],
                     lineTension: 0,
                     backgroundColor: 'transparent',
